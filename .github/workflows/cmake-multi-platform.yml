@@ -51,6 +51,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive # Ensures all submodules are fetched recursively
+        fetch-depth: 0         # Fetches the entire history (required for tags or specific commits)
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
