@@ -32,7 +32,7 @@ template <class Key, class Value, class Compare> class Map : public std::map<Key
         {
             size += stream.Write(&size, sizeof(size));
         }
-        uint32_t count = this.size();
+        uint32_t count = this->size();
         size += stream.Write(&count, sizeof(count));
         for (auto const &[key, val] : *this)
         {
