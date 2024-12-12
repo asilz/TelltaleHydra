@@ -9,6 +9,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 add_executable(hydra)
 add_subdirectory(src)
+add_subdirectory(extern)
 
 
 if(NOT DEFINED LOG_LEVEL)
