@@ -33,7 +33,7 @@ class Any
     {
         if constexpr (requires { T::Read(); })
         {
-            return static_cast<T *>(obj).Read(stream);
+            return static_cast<T *>(obj)->Read(stream);
         }
         else
         {
@@ -44,7 +44,7 @@ class Any
     {
         if constexpr (requires { T::Write(); })
         {
-            return static_cast<T *>(obj).Write(stream);
+            return static_cast<T *>(obj)->Write(stream);
         }
         else
         {
