@@ -16,3 +16,16 @@ size_t Stream::tell() { return ftell(stream); }
 Stream::Stream(const char *path, const char *mode) : stream(fopen(path, mode)) {}
 
 Stream::~Stream() { fclose(stream); }
+
+errno_t Stream::SeekMetaHeaderEnd()
+{
+    errno_t err = this->Seek(16, this->SET);
+    if (err < 0)
+    {
+        return err;
+    }
+    uint32_t entryCount;
+    this->Read(&entryCount, sizeof(entryCount));
+
+    return this->Seek(entryCount * 12, this->CUR);
+}

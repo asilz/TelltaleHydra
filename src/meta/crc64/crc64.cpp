@@ -32,7 +32,7 @@ const uint64_t crc64_table[] = {
     0x41A94CE9DC428066, 0xCF8B0890283E370C, 0x8D7BE97B81D4019F, 0x4A6ACB477BEA5A2A, 0x089A2AACD2006CB9, 0x14DEA25F3AF9026D, 0x562E43B4931334FE, 0x913F6188692D6F4B, 0xD3CF8063C0C759D8,
     0x5DEDC41A34BBEEB2, 0x1F1D25F19D51D821, 0xD80C07CD676F8394, 0x9AFCE626CE85B507};
 
-uint64_t CRC64_CaseInsensitive(uint64_t crc, const char *buf)
+constexpr uint64_t CRC64_CaseInsensitive(uint64_t crc, const char *buf)
 {
     while (*buf)
     {
@@ -51,9 +51,9 @@ struct HashName
     const char *name;
 };
 
-const char *CRC64_GetTypeName(uint64_t crc)
+constexpr const char *CRC64_GetTypeName(uint64_t crc)
 {
-    static const struct HashName descriptions[] = {
+    constexpr HashName descriptions[] = {
         {0x004F023463D89FB0, "Symbol"},
         {0x00A87B9875C485DB, "DCArray<LanguageResLocal>"},
         {0x00ACFF947A409DDB, "Mover"},

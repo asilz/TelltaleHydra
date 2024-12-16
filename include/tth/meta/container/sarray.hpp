@@ -9,7 +9,7 @@ template <class T, size_t N> class SArray
 
   public:
     static constexpr bool IS_BLOCKED = true;
-    uint32_t Read(Stream &stream, bool blocked = IS_BLOCKED)
+    uint32_t Read(Stream &stream, bool blocked)
     {
         if (blocked)
         {
@@ -18,12 +18,26 @@ template <class T, size_t N> class SArray
         uint32_t size = 0;
         for (size_t i = 0; i < N; ++i)
         {
-            size += data[i].Read(stream, false);
+            size += ReadObject<T>(data[i], stream);
         }
 
         return size;
     }
-    uint32_t Write(Stream &stream, bool blocked = IS_BLOCKED) const
+    uint32_t Read(Stream &stream)
+    {
+        if constexpr (IS_BLOCKED)
+        {
+            stream.Seek(4, stream.CUR);
+        }
+        uint32_t size = 0;
+        for (size_t i = 0; i < N; ++i)
+        {
+            size += ReadObject<T>(data[i], stream);
+        }
+
+        return size;
+    }
+    uint32_t Write(Stream &stream, bool blocked) const
     {
         uint32_t size = 0;
         if (blocked)
@@ -32,9 +46,28 @@ template <class T, size_t N> class SArray
         }
         for (size_t i = 0; i < N; ++i)
         {
-            size += data[i].Write(stream, false);
+            size += WriteObject<T>(data[i], stream);
         }
         if (blocked)
+        {
+            stream.Seek(-size, stream.CUR);
+            stream.Write(&size, sizeof(size));
+            stream.Seek(size - 4, stream.CUR);
+        }
+        return size;
+    }
+    uint32_t Write(Stream &stream) const
+    {
+        uint32_t size = 0;
+        if constexpr (IS_BLOCKED)
+        {
+            size += stream.Write(&size, sizeof(size));
+        }
+        for (size_t i = 0; i < N; ++i)
+        {
+            size += WriteObject<T>(data[i], stream);
+        }
+        if constexpr (IS_BLOCKED)
         {
             stream.Seek(-size, stream.CUR);
             stream.Write(&size, sizeof(size));

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdio.h>
+#include <cstdio>
 
 #ifndef TTE_LOG_LEVEL
 #define TTE_LOG_LEVEL 3

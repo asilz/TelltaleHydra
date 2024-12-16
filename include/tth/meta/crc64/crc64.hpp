@@ -2,5 +2,5 @@
 
 #include <inttypes.h>
 
-const char *CRC64_GetTypeName(uint64_t crc);
-uint64_t CRC64_CaseInsensitive(uint64_t crc, const char *buf);
+constexpr const char *CRC64_GetTypeName(uint64_t crc);
+constexpr uint64_t CRC64_CaseInsensitive(uint64_t crc, const char *buf);

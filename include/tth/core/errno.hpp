@@ -1,5 +1,5 @@
 #pragma once
 
-#include <inttypes.h>
+#include <cstdint>
 
 typedef int_least32_t errno_t;

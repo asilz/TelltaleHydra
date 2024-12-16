@@ -1,12 +1,9 @@
 #pragma once
 
-#include <stdio.h>
+#include <cstdio>
 #include <tth/core/errno.hpp>
 
-/*
-Stream wrapper
- */
-
+/* Stream wrapper */
 class Stream
 {
   private:
@@ -17,6 +14,7 @@ class Stream
     static constexpr int CUR = 1;
     static constexpr int END = 2;
 
+    errno_t SeekMetaHeaderEnd(); // TODO: Remove this and implement channel thing
     uint32_t Read(void *buf, size_t size);
     uint32_t Write(const void *buf, size_t size);
     size_t tell();
