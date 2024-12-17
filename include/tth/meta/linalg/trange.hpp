@@ -2,6 +2,9 @@
 
 #include <tth/stream/object.hpp>
 
+namespace TTH
+{
+
 template <class T> class TRange
 {
   private:
@@ -64,3 +67,5 @@ template <class T> class TRange
     T max;
     static constexpr bool IS_BLOCKED = false;
 };
+
+} // namespace TTH

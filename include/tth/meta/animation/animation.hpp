@@ -9,6 +9,9 @@
 #include <tth/meta/flags.hpp>
 #include <tth/meta/toolprops.hpp>
 
+namespace TTH
+{
+
 class Animation // virtual
 {
   private:
@@ -219,3 +222,4 @@ class Animation // virtual
 
     static constexpr bool IS_BLOCKED = true;
 };
+} // namespace TTH

@@ -2,6 +2,9 @@
 
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 class ToolProps
 {
   private:
@@ -51,3 +54,5 @@ class ToolProps
     bool mbHasProps;
     static constexpr bool IS_BLOCKED = false;
 };
+
+} // namespace TTH

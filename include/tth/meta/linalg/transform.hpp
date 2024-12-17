@@ -3,6 +3,9 @@
 #include <tth/meta/linalg/quaternion.hpp>
 #include <tth/meta/linalg/vector.hpp>
 
+namespace TTH
+{
+
 class Transform
 {
   private:
@@ -112,3 +115,4 @@ class Transform
     class Vector3 mTrans;
     static constexpr bool IS_BLOCKED = true;
 };
+} // namespace TTH

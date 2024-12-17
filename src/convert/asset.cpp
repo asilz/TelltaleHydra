@@ -13,6 +13,9 @@
 #include <tth/meta/crc64/crc64.hpp>
 #include <tth/meta/skeleton/skeleton.hpp>
 
+namespace TTH
+{
+
 errno_t ConvertSkeleton(const Skeleton &skeleton, aiNode &sceneNode)
 {
     for (auto const &bone : skeleton.mEntries)
@@ -282,3 +285,4 @@ errno_t ExportAsset(const Skeleton &skeleton, const Animation &animation)
 
     return 0;
 }
+} // namespace TTH

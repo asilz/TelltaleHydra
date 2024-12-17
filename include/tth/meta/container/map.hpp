@@ -4,6 +4,9 @@
 #include <tth/stream/object.hpp>
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 template <class Key, class Value, class Compare = std ::less<Key>> class Map : private std::map<Key, Value, Compare>
 {
 
@@ -94,3 +97,4 @@ template <class Key, class Value, class Compare = std ::less<Key>> class Map : p
         return size;
     }
 };
+} // namespace TTH

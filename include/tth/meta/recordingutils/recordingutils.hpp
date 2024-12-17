@@ -2,6 +2,9 @@
 
 #include <tth/meta/enum/enumbase.hpp>
 
+namespace TTH
+{
+
 namespace RecordingUtils
 {
 
@@ -104,3 +107,5 @@ struct EnumRecordingStatus : public EnumBase
     static constexpr bool IS_BLOCKED = true;
 };
 }; // namespace RecordingUtils
+
+} // namespace TTH

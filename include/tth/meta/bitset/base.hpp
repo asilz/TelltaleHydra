@@ -1,5 +1,8 @@
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 template <size_t N> class BitSetBase
 {
   private:
@@ -74,3 +77,4 @@ template <size_t N> class BitSetBase
     uint32_t mWords[N];
     static constexpr bool IS_BLOCKED = true;
 };
+} // namespace TTH

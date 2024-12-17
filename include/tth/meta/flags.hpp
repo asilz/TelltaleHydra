@@ -2,6 +2,9 @@
 
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 class Flags
 {
   private:
@@ -52,3 +55,5 @@ class Flags
     int32_t mFlags;
     static constexpr bool IS_BLOCKED = false;
 };
+
+} // namespace TTH

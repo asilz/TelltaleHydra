@@ -1,6 +1,9 @@
 #include <tth/meta/container/dcarray.hpp>
 #include <tth/meta/string/string.hpp>
 
+namespace TTH
+{
+
 class InputMapper
 {
   private:
@@ -303,3 +306,5 @@ class InputMapper
     class DCArray<class InputMapper::EventMapping> mMappedEvents;
     static constexpr bool IS_BLOCKED = true;
 };
+
+} // namespace TTH

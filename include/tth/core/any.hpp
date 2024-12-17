@@ -5,12 +5,15 @@
 #include <tth/stream/stream.hpp>
 #include <utility>
 
+namespace TTH
+{
+
 class Any
 {
   public:
     explicit Any(uint64_t hash);
 
-    template <class T> explicit Any(T &&obj) : obj_(new T{std::forward<T>(obj)}), dtor_(DtorAny<T>), copy_(CopyAny<T>), read_(ReadAny<T>), write_(WriteAny<T>), typeName_(::GetTypeName<T>()) {}
+    template <class T> explicit Any(T &&obj) : obj_(new T{std::forward<T>(obj)}), dtor_(DtorAny<T>), copy_(CopyAny<T>), read_(ReadAny<T>), write_(WriteAny<T>), typeName_(::TTH::GetTypeName<T>()) {}
     explicit Any() : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(nullptr), write_(nullptr), typeName_(nullptr) {}
 
     ~Any()
@@ -52,7 +55,7 @@ class Any
         read_ = ReadAny<T>;
         write_ = WriteAny<T>;
         copy_ = CopyAny<T>;
-        typeName_ = ::GetTypeName<T>();
+        typeName_ = ::TTH::GetTypeName<T>();
     }
     template <class T> T *GetTypePtr()
     {
@@ -84,3 +87,5 @@ class Any
     uint32_t (*write_)(Stream &, const void *);
     const char *typeName_;
 };
+
+} // namespace TTH

@@ -2,6 +2,9 @@
 
 #include <tth/meta/flags.hpp>
 
+namespace TTH
+{
+
 class PropertySet
 {
   private:
@@ -101,3 +104,5 @@ class PropertySet
     class Flags mPropertyFlags;
     static constexpr bool IS_BLOCKED = true;
 };
+
+} // namespace TTH

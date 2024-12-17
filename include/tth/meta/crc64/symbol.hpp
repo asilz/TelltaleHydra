@@ -2,6 +2,9 @@
 
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 class Symbol
 {
   private:
@@ -52,3 +55,5 @@ class Symbol
     uint64_t mCrc64;
     static constexpr bool IS_BLOCKED = false;
 };
+
+} // namespace TTH

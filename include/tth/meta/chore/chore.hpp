@@ -1,5 +1,8 @@
 #pragma once
 
+namespace TTH
+{
+
 class Chore
 {
   private:
@@ -273,3 +276,5 @@ class Chore
         static constexpr bool IS_BLOCKED = false;
     };
 };
+
+} // namespace TTH

@@ -8,6 +8,9 @@
 #include <tth/meta/t3texture/swizzle.hpp>
 #include <tth/meta/toolprops.hpp>
 
+namespace TTH
+{
+
 class T3SamplerStateBlock
 {
   private:
@@ -536,3 +539,5 @@ class T3Texture
         static constexpr bool IS_BLOCKED = true;
     };
 };
+
+} // namespace TTH

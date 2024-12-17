@@ -3,6 +3,9 @@
 #include <string>
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 class String : private std::string
 {
   private:
@@ -90,3 +93,5 @@ class String : private std::string
     }
     static constexpr bool IS_BLOCKED = true;
 };
+
+} // namespace TTH

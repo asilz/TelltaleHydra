@@ -6,6 +6,9 @@
 #include <tth/meta/flags.hpp>
 #include <tth/meta/string/string.hpp>
 
+namespace TTH
+{
+
 class JiraRecordManager
 {
   private:
@@ -2446,3 +2449,5 @@ class DlgFolder : public DlgObjIDOwner, public DlgObjectPropsOwner, public DlgCh
     class PropertySet mProdReportProps;
     static constexpr bool IS_BLOCKED = true;
 };
+
+} // namespace TTH

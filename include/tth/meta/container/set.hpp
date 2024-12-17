@@ -3,6 +3,9 @@
 #include <set>
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 template <class Key, class Compare> class Set : private std::set<Key, Compare>
 {
 
@@ -85,3 +88,5 @@ template <class Key, class Compare> class Set : private std::set<Key, Compare>
         return size;
     }
 };
+
+} // namespace TTH

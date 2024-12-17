@@ -2,6 +2,9 @@
 
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 class Vector4
 {
   private:
@@ -197,3 +200,5 @@ class Vector2
     float y;
     static constexpr bool IS_BLOCKED = false;
 };
+
+} // namespace TTH

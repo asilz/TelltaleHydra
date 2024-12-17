@@ -4,6 +4,9 @@
 #include <tth/stream/object.hpp>
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 template <class T> class Ptr : public std::unique_ptr<T>
 {
   private:
@@ -52,3 +55,4 @@ template <class T> class Ptr : public std::unique_ptr<T>
     }
     static constexpr bool IS_BLOCKED = false;
 };
+} // namespace TTH

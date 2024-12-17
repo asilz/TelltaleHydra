@@ -6,6 +6,9 @@
 #include <tth/meta/linalg/vector.hpp>
 #include <tth/stream/object.hpp>
 
+namespace TTH
+{
+
 class AnimationValueInterfaceBase
 {
   private:
@@ -474,3 +477,4 @@ class CompressedSkeletonPoseKeys2 : public AnimationValueInterfaceBase
 
     static constexpr bool IS_BLOCKED = false;
 };
+} // namespace TTH

@@ -2,6 +2,9 @@
 
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 class Quaternion
 {
   private:
@@ -70,3 +73,5 @@ class Quaternion
     float w;
     static constexpr bool IS_BLOCKED = false;
 };
+
+} // namespace TTH

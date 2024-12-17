@@ -2,6 +2,9 @@
 
 #include <tth/meta/enum/enumbase.hpp>
 
+namespace TTH
+{
+
 struct EnumPlatformType : public EnumBase
 {
   private:
@@ -100,3 +103,4 @@ struct EnumPlatformType : public EnumBase
     int32_t mVal;
     static constexpr bool IS_BLOCKED = true;
 };
+} // namespace TTH

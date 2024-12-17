@@ -5,6 +5,9 @@
 #include <tth/meta/flags.hpp>
 #include <tth/meta/string/string.hpp>
 
+namespace TTH
+{
+
 class LogicGroup
 {
   private:
@@ -310,3 +313,4 @@ class Rule
     class String mAgentCategory;
     static constexpr bool IS_BLOCKED = true;
 };
+} // namespace TTH

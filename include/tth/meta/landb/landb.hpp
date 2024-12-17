@@ -9,6 +9,9 @@
 #include <tth/meta/toolprops.hpp>
 #include <tth/meta/uid/uid.hpp>
 
+namespace TTH
+{
+
 class LocalizationRegistry
 {
   private:
@@ -695,3 +698,5 @@ class LanguageDB : public UID::Owner, public UID::Generator
     class DCArray<class ProjectDatabaseIDPair> mExpandedIDRanges;
     static constexpr bool IS_BLOCKED = true;
 };
+
+} // namespace TTH

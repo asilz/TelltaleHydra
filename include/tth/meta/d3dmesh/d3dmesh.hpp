@@ -11,6 +11,9 @@
 #include <tth/meta/t3texture/t3texture.hpp>
 #include <tth/meta/toolprops.hpp>
 
+namespace TTH
+{
+
 class BinaryBuffer
 {
   private:
@@ -3506,3 +3509,5 @@ class D3DMesh
     uint64_t mLODParamCRC;
     static constexpr bool IS_BLOCKED = true;
 };
+
+} // namespace TTH

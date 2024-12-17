@@ -1,5 +1,8 @@
 #pragma once
 
+namespace TTH
+{
+
 enum MetaFlag
 {
     MetaFlag_MetaSerializeDisable = 0x1,
@@ -31,3 +34,5 @@ enum MetaFlag
     MetaFlag_IsNotMetaFile = 0x4000000,
     Internal_MetaFlag_Initialized = 0x20000000,
 };
+
+}

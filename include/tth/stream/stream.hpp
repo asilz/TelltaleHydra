@@ -3,6 +3,9 @@
 #include <cstdio>
 #include <tth/core/errno.hpp>
 
+namespace TTH
+{
+
 /* Stream wrapper */
 class Stream
 {
@@ -22,3 +25,5 @@ class Stream
     Stream(const char *path, const char *mode);
     ~Stream();
 };
+
+} // namespace TTH
