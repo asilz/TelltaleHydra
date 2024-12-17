@@ -18,10 +18,31 @@ class Any
         if (dtor_)
         {
             dtor_(obj_);
+            obj_ = nullptr;
+            dtor_ = nullptr;
         }
     }
 
     Any(const Any &other) : obj_(other.copy_(other.obj_)), dtor_(other.dtor_), copy_(other.copy_), read_(other.read_), write_(other.write_), typeName_(other.typeName_) {}
+    Any &operator=(Any &&other) noexcept
+    {
+        if (this != &other)
+        {
+            if (dtor_)
+            {
+                dtor_(obj_);
+            }
+            obj_ = other.obj_;
+            dtor_ = other.dtor_;
+            copy_ = other.copy_;
+            read_ = other.read_;
+            write_ = other.write_;
+            typeName_ = other.typeName_;
+            other.obj_ = nullptr;
+            other.dtor_ = nullptr;
+        }
+        return *this;
+    }
 
     template <class T> void SetType()
     {
@@ -30,6 +51,7 @@ class Any
         dtor_ = DtorAny<T>;
         read_ = ReadAny<T>;
         write_ = WriteAny<T>;
+        copy_ = CopyAny<T>;
         typeName_ = ::GetTypeName<T>();
     }
     template <class T> T *GetTypePtr()
@@ -52,8 +74,8 @@ class Any
     template <class T> static void DtorAny(void *obj) { delete static_cast<T *>(obj); }
     template <class T> static void *CopyAny(void *obj) { return new T{*static_cast<T *>(obj)}; }
 
-    template <class T> static uint32_t ReadAny(Stream &stream, void *obj) { return ReadObject<T>(*static_cast<T *>(obj), stream); }
-    template <class T> static uint32_t WriteAny(Stream &stream, const void *obj) { return WriteObject<T>(*static_cast<const T *>(obj), stream); }
+    template <class T> static uint32_t ReadAny(Stream &stream, void *obj) { return ReadObject<T>(*static_cast<T *>(obj), stream, false); }
+    template <class T> static uint32_t WriteAny(Stream &stream, const void *obj) { return WriteObject<T>(*static_cast<const T *>(obj), stream, false); }
 
     void *obj_;
     void (*dtor_)(void *);

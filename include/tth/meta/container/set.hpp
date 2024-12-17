@@ -20,7 +20,7 @@ template <class Key, class Compare> class Set : private std::set<Key, Compare>
         while (count--)
         {
             Key key;
-            size += ReadObject<Key>(key, stream);
+            size += ReadObject<Key>(key, stream, false);
             this->insert(key);
         }
         return size;
@@ -36,7 +36,7 @@ template <class Key, class Compare> class Set : private std::set<Key, Compare>
         while (count--)
         {
             Key key;
-            size += ReadObject<Key>(key, stream);
+            size += ReadObject<Key>(key, stream, false);
             this->insert(key);
         }
         return size;
@@ -53,7 +53,7 @@ template <class Key, class Compare> class Set : private std::set<Key, Compare>
         size += stream.Write(&count, sizeof(count));
         for (auto const &i : *this)
         {
-            size += WriteObject<Key>(i, stream);
+            size += WriteObject<Key>(i, stream, false);
         }
         if (blocked)
         {
@@ -74,7 +74,7 @@ template <class Key, class Compare> class Set : private std::set<Key, Compare>
         size += stream.Write(&count, sizeof(count));
         for (auto const &i : *this)
         {
-            size += WriteObject<Key>(i, stream);
+            size += WriteObject<Key>(i, stream, false);
         }
         if constexpr (IS_BLOCKED)
         {

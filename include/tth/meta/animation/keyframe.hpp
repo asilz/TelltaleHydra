@@ -65,15 +65,15 @@ class AnimationValueInterfaceBase
             {
                 return err;
             };
-            return Read_(stream) + 4;
+            return AnimationValueInterfaceBase::Read_(stream) + 4;
         }
-        return Read_(stream);
+        return AnimationValueInterfaceBase::Read_(stream);
     }
     virtual int32_t Write(Stream &stream) const
     {
         int32_t size = 0;
         size += stream.Write(&size, sizeof(size));
-        size += Write_(stream);
+        size += AnimationValueInterfaceBase::Write_(stream);
         int32_t err = stream.Seek(-size, stream.CUR);
         if (err < 0)
         {
@@ -94,7 +94,7 @@ class AnimationValueInterfaceBase
         {
             size += stream.Write(&size, sizeof(size));
         }
-        size += Write_(stream);
+        size += AnimationValueInterfaceBase::Write_(stream);
         if (blocked)
         {
             int32_t err = stream.Seek(-size, stream.CUR);
@@ -133,7 +133,7 @@ template <class T> class AnimatedValueInterface : AnimationValueInterfaceBase
         {
             return err;
         }
-        return Read_(stream) + 4;
+        return AnimatedValueInterface::Read_(stream) + 4;
     }
     virtual int32_t Read(Stream &stream, bool blocked)
     {
@@ -144,15 +144,15 @@ template <class T> class AnimatedValueInterface : AnimationValueInterfaceBase
             {
                 return err;
             };
-            return Read_(stream) + 4;
+            return AnimatedValueInterface::Read_(stream) + 4;
         }
-        return Read_(stream);
+        return AnimatedValueInterface::Read_(stream);
     }
     virtual int32_t Write(Stream &stream) const
     {
         int32_t size = 0;
         size += stream.Write(&size, sizeof(size));
-        size += Write_(stream);
+        size += AnimatedValueInterface::Write_(stream);
         int32_t err = stream.Seek(-size, stream.CUR);
         if (err < 0)
         {
@@ -173,7 +173,7 @@ template <class T> class AnimatedValueInterface : AnimationValueInterfaceBase
         {
             size += stream.Write(&size, sizeof(size));
         }
-        size += Write_(stream);
+        size += AnimatedValueInterface::Write_(stream);
         if (blocked)
         {
             int32_t err = stream.Seek(-size, stream.CUR);
@@ -453,7 +453,20 @@ class CompressedSkeletonPoseKeys2 : public AnimationValueInterfaceBase
         return size;
     }
 
-    ~CompressedSkeletonPoseKeys2() { delete mpData; }
+    struct Header
+    {
+        Vector3 mMinDeltaV;
+        Vector3 mRangeDeltaV;
+        Vector3 mMinDeltaQ;
+        Vector3 mRangeDeltaQ;
+        Vector3 mMinVector;
+        Vector3 mRangeVector;
+        float mRangeTime;
+        uint32_t mBoneCount;
+        uint64_t mSampleDataSize;
+    };
+
+    ~CompressedSkeletonPoseKeys2() { delete[] mpData; }
     CompressedSkeletonPoseKeys2() : mDataSize(0), mpData(nullptr) {}
 
     uint32_t mDataSize;

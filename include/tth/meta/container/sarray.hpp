@@ -18,7 +18,7 @@ template <class T, size_t N> class SArray
         uint32_t size = 0;
         for (size_t i = 0; i < N; ++i)
         {
-            size += ReadObject<T>(data[i], stream);
+            size += ReadObject<T>(data[i], stream, false);
         }
 
         return size;
@@ -32,7 +32,7 @@ template <class T, size_t N> class SArray
         uint32_t size = 0;
         for (size_t i = 0; i < N; ++i)
         {
-            size += ReadObject<T>(data[i], stream);
+            size += ReadObject<T>(data[i], stream, false);
         }
 
         return size;
@@ -46,7 +46,7 @@ template <class T, size_t N> class SArray
         }
         for (size_t i = 0; i < N; ++i)
         {
-            size += WriteObject<T>(data[i], stream);
+            size += WriteObject<T>(data[i], stream, false);
         }
         if (blocked)
         {
@@ -65,7 +65,7 @@ template <class T, size_t N> class SArray
         }
         for (size_t i = 0; i < N; ++i)
         {
-            size += WriteObject<T>(data[i], stream);
+            size += WriteObject<T>(data[i], stream, false);
         }
         if constexpr (IS_BLOCKED)
         {

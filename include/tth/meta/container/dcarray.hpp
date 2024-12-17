@@ -4,7 +4,7 @@
 #include <tth/stream/stream.hpp>
 #include <vector>
 
-template <class T> class DCArray : private std::vector<T>
+template <class T> class DCArray : public std::vector<T>
 {
   public:
     using std::vector<T>::vector;
@@ -20,7 +20,7 @@ template <class T> class DCArray : private std::vector<T>
         this->resize(count);
         for (auto &i : *this)
         {
-            size += ReadObject<T>(i, stream);
+            size += ReadObject<T>(i, stream, false);
         }
 
         return size;
@@ -36,7 +36,7 @@ template <class T> class DCArray : private std::vector<T>
         this->resize(count);
         for (auto &i : *this)
         {
-            size += ReadObject<T>(i, stream);
+            size += ReadObject<T>(i, stream, false);
         }
 
         return size;
@@ -52,7 +52,7 @@ template <class T> class DCArray : private std::vector<T>
         size += stream.Write(&count, sizeof(count));
         for (auto const &i : *this)
         {
-            size += WriteObject<T>(i, stream);
+            size += WriteObject<T>(i, stream, false);
         }
         if (blocked)
         {
@@ -74,7 +74,7 @@ template <class T> class DCArray : private std::vector<T>
         size += stream.Write(&count, sizeof(count));
         for (auto const &i : *this)
         {
-            size += WriteObject<T>(i, stream);
+            size += WriteObject<T>(i, stream, false);
         }
         if constexpr (IS_BLOCKED)
         {

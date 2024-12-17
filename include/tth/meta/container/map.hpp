@@ -21,8 +21,8 @@ template <class Key, class Value, class Compare = std ::less<Key>> class Map : p
         while (count--)
         {
             std::pair<Key, Value> kv;
-            size += ReadObject<Key>(kv.first, stream);
-            size += ReadObject<Value>(kv.second, stream);
+            size += ReadObject<Key>(kv.first, stream, false);
+            size += ReadObject<Value>(kv.second, stream, false);
             this->insert(kv);
         }
         return size;
@@ -39,8 +39,8 @@ template <class Key, class Value, class Compare = std ::less<Key>> class Map : p
         while (count--)
         {
             std::pair<Key, Value> kv;
-            size += ReadObject<Key>(kv.first, stream);
-            size += ReadObject<Value>(kv.second, stream);
+            size += ReadObject<Key>(kv.first, stream, false);
+            size += ReadObject<Value>(kv.second, stream, false);
             this->insert(kv);
         }
         return size;
@@ -57,8 +57,8 @@ template <class Key, class Value, class Compare = std ::less<Key>> class Map : p
         size += stream.Write(&count, sizeof(count));
         for (auto const &[key, val] : *this)
         {
-            size += WriteObject<Key>(key, stream);
-            size += WriteObject<Value>(val, stream);
+            size += WriteObject<Key>(key, stream, false);
+            size += WriteObject<Value>(val, stream, false);
         }
 
         if (blocked)
@@ -81,8 +81,8 @@ template <class Key, class Value, class Compare = std ::less<Key>> class Map : p
         size += stream.Write(&count, sizeof(count));
         for (auto const &[key, val] : *this)
         {
-            size += WriteObject<Key>(key, stream);
-            size += WriteObject<Value>(val, stream);
+            size += WriteObject<Key>(key, stream, false);
+            size += WriteObject<Value>(val, stream, false);
         }
 
         if constexpr (IS_BLOCKED)

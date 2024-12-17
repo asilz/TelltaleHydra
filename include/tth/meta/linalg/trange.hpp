@@ -8,15 +8,15 @@ template <class T> class TRange
     inline int32_t Read_(Stream &stream)
     {
         int32_t size = 0;
-        size += ReadObject<T>(this->min, stream);
-        size += ReadObject<T>(this->max, stream);
+        size += ReadObject<T>(this->min, stream, false);
+        size += ReadObject<T>(this->max, stream, false);
         return size;
     }
     inline int32_t Write_(Stream &stream) const
     {
         int32_t size = 0;
-        size += WriteObject<T>(this->min, stream);
-        size += WriteObject<T>(this->max, stream);
+        size += WriteObject<T>(this->min, stream, false);
+        size += WriteObject<T>(this->max, stream, false);
         return size;
     }
 

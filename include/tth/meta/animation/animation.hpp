@@ -52,7 +52,6 @@ class Animation // virtual
         }
 
         size += stream.Read(&this->mInterfaceCount, sizeof(this->mInterfaceCount));
-        this->mValues = new Any[mInterfaceCount]();
 
         int32_t dataBufferSize;
         stream.Read(&dataBufferSize, sizeof(dataBufferSize));
@@ -69,17 +68,18 @@ class Animation // virtual
             stream.Read(&animValues[i].typeVersion, sizeof(animValues[i].typeVersion));
         }
 
+        this->mValues = new Any[mInterfaceCount]();
         size_t anyIndex = 0;
         for (int32_t i = 0; i < animValueTypes; ++i)
         {
             for (int32_t j = 0; j < animValues[i].valueCount; ++j)
             {
-                this->mValues[anyIndex] = Any(animValues[i].hash);
+                this->mValues[anyIndex] = Any(animValues[i].hash); // TODO: fix extra copy
                 this->mValues[anyIndex++].Read(stream);
             }
         }
 
-        delete animValues;
+        delete[] animValues;
 
         this->mInterfaceFlags = new Flags[this->mInterfaceCount];
         for (int32_t i = 0; i < this->mInterfaceCount; ++i)
@@ -87,19 +87,19 @@ class Animation // virtual
             this->mInterfaceFlags[i].Read(stream);
         }
 
-        uint16_t isInterfaceSymbols;
-        stream.Read(&isInterfaceSymbols, sizeof(isInterfaceSymbols));
-        if (isInterfaceSymbols)
+        uint16_t isNotInterfaceSymbols;
+        stream.Read(&isNotInterfaceSymbols, sizeof(isNotInterfaceSymbols));
+        if (isNotInterfaceSymbols)
+        {
+            this->mInterfaceSymbols = nullptr;
+        }
+        else
         {
             this->mInterfaceSymbols = new Symbol[this->mInterfaceCount];
             for (int32_t i = 0; i < this->mInterfaceCount; ++i)
             {
                 this->mInterfaceSymbols[i].Read(stream);
             }
-        }
-        else
-        {
-            this->mInterfaceSymbols = nullptr;
         }
 
         return size;
@@ -141,7 +141,7 @@ class Animation // virtual
         {
             return err;
         }
-        return Read_(stream) + 4;
+        return Animation::Read_(stream) + 4;
     }
     virtual int32_t Read(Stream &stream, bool blocked)
     {
@@ -152,15 +152,15 @@ class Animation // virtual
             {
                 return err;
             };
-            return Read_(stream) + 4;
+            return Animation::Read_(stream) + 4;
         }
-        return Read_(stream);
+        return Animation::Read_(stream);
     }
     virtual int32_t Write(Stream &stream) const
     {
         int32_t size = 0;
         size += stream.Write(&size, sizeof(size));
-        size += Write_(stream);
+        size += Animation::Write_(stream);
         int32_t err = stream.Seek(-size, stream.CUR);
         if (err < 0)
         {
@@ -181,7 +181,7 @@ class Animation // virtual
         {
             size += stream.Write(&size, sizeof(size));
         }
-        size += Write_(stream);
+        size += Animation::Write_(stream);
         if (blocked)
         {
             int32_t err = stream.Seek(-size, stream.CUR);
@@ -201,9 +201,9 @@ class Animation // virtual
     Animation() : mValues(nullptr), mInterfaceFlags(nullptr), mInterfaceSymbols(nullptr) {}
     ~Animation()
     {
-        delete mValues;
-        delete mInterfaceFlags;
-        delete mInterfaceSymbols;
+        delete[] mValues;
+        delete[] mInterfaceFlags;
+        delete[] mInterfaceSymbols;
     }
 
     int32_t mVersion;
