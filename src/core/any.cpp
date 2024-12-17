@@ -16,6 +16,9 @@
 #include <tth/meta/t3texture/swizzle.hpp>
 #include <tth/meta/t3texture/t3texture.hpp>
 
+namespace TTH
+{
+
 typedef int64_t int64;
 typedef int32_t int32;
 typedef int16_t int16;
@@ -2943,3 +2946,5 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         break;
     }
 }
+
+} // namespace TTH

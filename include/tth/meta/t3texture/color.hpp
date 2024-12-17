@@ -2,6 +2,9 @@
 
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 class Color
 {
   private:
@@ -146,3 +149,5 @@ class T3ToonGradientRegion
     float mGradientSize;
     static constexpr bool IS_BLOCKED = false;
 };
+
+} // namespace TTH

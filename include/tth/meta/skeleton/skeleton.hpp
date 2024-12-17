@@ -8,6 +8,9 @@
 #include <tth/meta/linalg/trange.hpp>
 #include <tth/meta/linalg/transform.hpp>
 
+namespace TTH
+{
+
 class BoneContraints
 {
   private:
@@ -462,3 +465,5 @@ class Skeleton
     class DCArray<class Entry> mEntries;
     static constexpr bool IS_BLOCKED = true;
 };
+
+} // namespace TTH

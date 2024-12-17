@@ -2,6 +2,9 @@
 
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 template <class T, size_t N> class SArray
 {
   private:
@@ -78,3 +81,4 @@ template <class T, size_t N> class SArray
 
     T &operator[](size_t index) { return data[index]; }
 };
+} // namespace TTH

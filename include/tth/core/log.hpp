@@ -2,6 +2,9 @@
 
 #include <cstdio>
 
+namespace TTH
+{
+
 #ifndef TTE_LOG_LEVEL
 #define TTE_LOG_LEVEL 3
 #endif
@@ -23,3 +26,5 @@
 #else
 #define TTH_LOG_ERROR(...)
 #endif
+
+} // namespace TTH

@@ -6,6 +6,9 @@
 #include <tth/meta/crc64/symbol.hpp>
 #include <tth/meta/string/string.hpp>
 
+namespace TTH
+{
+
 namespace PreloadPackage
 {
 struct ResourceKey
@@ -480,3 +483,5 @@ class RuntimeDataDialog
 };
 
 }; // namespace PreloadPackage
+
+} // namespace TTH

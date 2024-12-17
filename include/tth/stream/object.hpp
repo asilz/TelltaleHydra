@@ -3,6 +3,9 @@
 #include <tth/stream/stream.hpp>
 #include <type_traits>
 
+namespace TTH
+{
+
 template <class T> inline uint32_t WriteObject(const T &object, Stream &stream, bool blocked)
 {
     if constexpr (std::is_class<T>())
@@ -49,3 +52,5 @@ template <class T> inline uint32_t ReadObject(T &object, Stream &stream)
         return stream.Read(&object, sizeof(object));
     }
 }
+
+} // namespace TTH

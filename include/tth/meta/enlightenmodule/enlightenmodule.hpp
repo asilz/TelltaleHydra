@@ -2,6 +2,9 @@
 #include <tth/meta/linalg/vector.hpp>
 #include <tth/meta/string/string.hpp>
 
+namespace TTH
+{
+
 class EnlightenModule
 {
   private:
@@ -2307,3 +2310,5 @@ class EnlightenModule
         static constexpr bool IS_BLOCKED = false;
     };
 };
+
+} // namespace TTH

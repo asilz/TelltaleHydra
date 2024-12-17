@@ -4,6 +4,9 @@
 #include <tth/stream/stream.hpp>
 #include <vector>
 
+namespace TTH
+{
+
 template <class T> class DCArray : public std::vector<T>
 {
   public:
@@ -87,3 +90,5 @@ template <class T> class DCArray : public std::vector<T>
 };
 
 template <class T> using DArray = DCArray<T>;
+
+} // namespace TTH

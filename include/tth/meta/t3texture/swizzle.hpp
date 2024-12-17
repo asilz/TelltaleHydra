@@ -2,6 +2,9 @@
 
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 struct RenderSwizzleParams
 {
   private:
@@ -76,3 +79,5 @@ struct RenderSwizzleParams
     uint8_t mSwizzle[4];
     static constexpr bool IS_BLOCKED = true;
 };
+
+} // namespace TTH

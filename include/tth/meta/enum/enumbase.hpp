@@ -2,6 +2,9 @@
 
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
+
 struct EnumBase
 {
   private:
@@ -50,3 +53,5 @@ struct EnumBase
     }
     static constexpr bool IS_BLOCKED = false;
 };
+
+} // namespace TTH

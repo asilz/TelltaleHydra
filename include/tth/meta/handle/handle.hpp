@@ -2,6 +2,9 @@
 
 #include <tth/meta/crc64/symbol.hpp>
 
+namespace TTH
+{
+
 class HandleBase
 {
   private:
@@ -142,3 +145,4 @@ template <class T> class Handle : public HandleBase
     }
     static constexpr bool IS_BLOCKED = true;
 };
+} // namespace TTH
