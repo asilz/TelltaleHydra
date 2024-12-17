@@ -1,3 +1,6 @@
+#include <cerrno>
+#include <cstdio>
+#include <tth/convert/asset.hpp>
 #include <tth/core/any.hpp>
 #include <tth/core/log.hpp>
 #include <tth/meta/animation/animation.hpp>
