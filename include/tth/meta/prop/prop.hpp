@@ -1,5 +1,6 @@
 #pragma once
 
+#include <tth/meta/container/dcarray.hpp>
 #include <tth/meta/flags.hpp>
 
 namespace TTH
@@ -19,7 +20,45 @@ class PropertySet
             return err;
         }
         size += err;
-        return size;
+
+        uint32_t blockSize = 4;
+        stream.Seek(4, stream.CUR);
+
+        err = this->mParents.Read(stream);
+        if (err < 0)
+        {
+            return err;
+        }
+        blockSize += err;
+
+        blockSize += stream.Read(&this->mGroupCount, sizeof(this->mGroupCount));
+        this->mGroups = new TypeGroup[this->mGroupCount];
+        for (uint32_t i = 0; i < this->mGroupCount; ++i) // TODO: Fix this piece of garbage
+        {
+            blockSize += stream.Read(&this->mGroups[i].typeSymbol, sizeof(this->mGroups[i].typeSymbol));
+            blockSize += stream.Read(&this->mGroups[i].pairCount, sizeof(this->mGroups[i].pairCount));
+
+            this->mGroups[i].pairs = new TypeGroup::NameValuePair[this->mGroups[i].pairCount];
+            for (uint32_t j = 0; j < this->mGroups[i].pairCount; ++j)
+            {
+                blockSize += stream.Read(&this->mGroups[i].pairs[j].nameHash, sizeof(this->mGroups[i].pairs[j].nameHash));
+                this->mGroups[i].pairs[j].value = Any(this->mGroups[i].typeSymbol);
+                blockSize += this->mGroups[i].pairs[j].value.Read(stream);
+            }
+        }
+
+        if (this->mPropertyFlags.mFlags & eHasEditorProps)
+        {
+            this->mEditorProp = new PropertySet;
+            err = this->mEditorProp->Read(stream);
+            if (err < 0)
+            {
+                return err;
+            }
+            blockSize += err;
+        }
+
+        return size + blockSize;
     }
     inline int32_t Write_(Stream &stream) const
     {
@@ -100,8 +139,68 @@ class PropertySet
         }
         return size;
     }
+    struct TypeGroup
+    {
+        struct NameValuePair
+        {
+            uint64_t nameHash;
+            Any value;
+        };
+
+        uint64_t typeSymbol;
+        uint32_t pairCount;
+        NameValuePair *pairs;
+
+        TypeGroup() : typeSymbol(0), pairCount(0), pairs(nullptr) {}
+        ~TypeGroup() { delete[] pairs; }
+    };
+
+    enum PropertyFlags
+    {
+        eSceneProperties = 0x1,
+        eChoreAgentProperties = 0x2,
+        eChoreResourceProperties = 0x4,
+        ePlaybackControllerProperties = 0x8,
+        eRuntimeProperties = 0x10,
+        eRuleProperty = 0x20,
+        eActorAgentProperties = 0x40,
+        eAgentProperties = 0x80,
+        eScriptChangedAtRuntime = 0x100,
+        eExcludeFromSaveGames = 0x200,
+        eHasEditorProps = 0x400,
+        eInDelayPostLoadQueue = 0x1000,
+        eInDelayPostLoadQueueLocked = 0x2000,
+        eInDelayPostLoadQueueDeleted = 0x4000,
+        eReadOnly = 0x8000,
+        ePropertyInterface = 0x10000,
+        ePropertyCallbacksOnly = 0x20000,
+        eCreateKeysInAlt = 0x40000,
+        eTransientProperties = 0x80000,
+        eDontValidate = 0x100000,
+        eReferencedByLuaFunc = 0x200000,
+        eLockedInCache = 0x400000,
+        eEmbedded = 0x800000,
+        eSynchronousCallbacks = 0x1000000,
+        eOwnsHandleToSelf = 0x2000000,
+        eMaterialProperties = 0x4000000,
+        eMaterialRuntimeProperties = 0x8000000
+    };
+
+    PropertySet() : mPropVersion(-1), mPropertyFlags(Flags()), mParents(DCArray<Handle<PropertySet>>()), mGroupCount(0), mGroups(nullptr), mEditorProp(nullptr) {}
+    ~PropertySet()
+    {
+        delete[] mGroups;
+        delete mEditorProp;
+    }
+
     int32_t mPropVersion;
-    class Flags mPropertyFlags;
+    Flags mPropertyFlags;
+    // block
+    DCArray<Handle<PropertySet>> mParents; // This is supposed to be a List
+    uint32_t mGroupCount;
+    TypeGroup *mGroups;
+    PropertySet *mEditorProp;
+
     static constexpr bool IS_BLOCKED = true;
 };
 

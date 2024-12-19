@@ -8,13 +8,90 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <cassert>
+#include <tth/convert/asset.hpp>
 #include <tth/core/log.hpp>
-#include <tth/meta/animation/animation.hpp>
 #include <tth/meta/crc64/crc64.hpp>
-#include <tth/meta/skeleton/skeleton.hpp>
 
 namespace TTH
 {
+
+enum GFXPlatformVertexAttribute
+{
+    eGFXPlatformAttribute_Position,
+    eGFXPlatformAttribute_Normal,
+    eGFXPlatformAttribute_Tangent,
+    eGFXPlatformAttribute_BlendWeight,
+    eGFXPlatformAttribute_BlendIndex,
+    eGFXPlatformAttribute_Color,
+    eGFXPlatformAttribute_TexCoord,
+    eGFXPlatformAttribute_Count,
+    eGFXPlatformAttribute_None = -1
+};
+
+enum GFXPlatformFormat
+{
+    eGFXPlatformFormat_None,
+    eGFXPlatformFormat_F32,
+    eGFXPlatformFormat_F32x2,
+    eGFXPlatformFormat_F32x3,
+    eGFXPlatformFormat_F32x4,
+    eGFXPlatformFormat_F16x2,
+    eGFXPlatformFormat_F16x4,
+    eGFXPlatformFormat_S32,
+    eGFXPlatformFormat_U32,
+    eGFXPlatformFormat_S32x2,
+    eGFXPlatformFormat_U32x2,
+    eGFXPlatformFormat_S32x3,
+    eGFXPlatformFormat_U32x3,
+    eGFXPlatformFormat_S32x4,
+    eGFXPlatformFormat_U32x4,
+    eGFXPlatformFormat_S16,
+    eGFXPlatformFormat_U16,
+    eGFXPlatformFormat_S16x2,
+    eGFXPlatformFormat_U16x2,
+    eGFXPlatformFormat_S16x4,
+    eGFXPlatformFormat_U16x4,
+    eGFXPlatformFormat_SN16,
+    eGFXPlatformFormat_UN16,
+    eGFXPlatformFormat_SN16x2,
+    eGFXPlatformFormat_UN16x2,
+    eGFXPlatformFormat_SN16x4,
+    eGFXPlatformFormat_UN16x4,
+    eGFXPlatformFormat_S8,
+    eGFXPlatformFormat_U8,
+    eGFXPlatformFormat_S8x2,
+    eGFXPlatformFormat_U8x2,
+    eGFXPlatformFormat_S8x4,
+    eGFXPlatformFormat_U8x4,
+    eGFXPlatformFormat_SN8,
+    eGFXPlatformFormat_UN8,
+    eGFXPlatformFormat_SN8x2,
+    eGFXPlatformFormat_UN8x2,
+    eGFXPlatformFormat_SN8x4,
+    eGFXPlatformFormat_UN8x4,
+    eGFXPlatformFormat_SN10_SN11_SN11,
+    eGFXPlatformFormat_SN10x3_SN2,
+    eGFXPlatformFormat_UN10x3_UN2,
+    eGFXPlatformFormat_D3DCOLOR,
+    eGFXPlatformFormat_Count
+};
+
+enum eGFXPlatformBufferUsage
+{
+    eGFXPlatformBuffer_None = 0x0,
+    eGFXPlatformBuffer_Vertex = 0x1,
+    eGFXPlatformBuffer_Index = 0x2,
+    eGFXPlatformBuffer_Uniform = 0x4,
+    eGFXPlatformBuffer_ShaderRead = 0x8,
+    eGFXPlatformBuffer_ShaderWrite = 0x10,
+    eGFXPlatformBuffer_ShaderReadWrite = 0x18,
+    eGFXPlatformBuffer_ShaderRawAccess = 0x20,
+    eGFXPlatformBuffer_ShaderReadRaw = 0x28,
+    eGFXPlatformBuffer_ShaderWriteRaw = 0x30,
+    eGFXPlatformBuffer_ShaderReadWriteRaw = 0x38,
+    eGFXPlatformBuffer_DrawIndirectArgs = 0x40,
+    eGFXPlatformBuffer_SingleValue = 0x80
+};
 
 errno_t ConvertSkeleton(const Skeleton &skeleton, aiNode &sceneNode)
 {
@@ -227,13 +304,204 @@ errno_t ConvertAnimation(const Animation &animation, aiAnimation &assimpAnimatio
     return 0;
 }
 
-static void LogCallback(const char *msg, char *userData)
+errno_t GetGlobalMatrix(aiMatrix4x4 &result, const aiNode &node)
 {
-    TTH_LOG_INFO("%s\n", msg);
-    TTH_LOG_INFO("%s\n", userData);
+    if (node.mParent != nullptr)
+    {
+        aiMatrix4x4 parentGlobalTransform;
+        GetGlobalMatrix(parentGlobalTransform, *node.mParent);
+        result *= parentGlobalTransform;
+    }
+    result *= node.mTransformation;
+    return 0;
 }
 
-errno_t ExportAsset(const Skeleton &skeleton, const Animation &animation)
+#define TRIANGLE_INDEX_COUNT 3
+
+errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scene)
+{
+    mesh.mAABB.mMin.x = d3dmesh.mMeshData.mBoundingBox.mMin.x;
+    mesh.mAABB.mMin.y = d3dmesh.mMeshData.mBoundingBox.mMin.y;
+    mesh.mAABB.mMin.z = d3dmesh.mMeshData.mBoundingBox.mMin.z;
+    mesh.mAABB.mMax.x = d3dmesh.mMeshData.mBoundingBox.mMax.x;
+    mesh.mAABB.mMax.y = d3dmesh.mMeshData.mBoundingBox.mMax.y;
+    mesh.mAABB.mMax.z = d3dmesh.mMeshData.mBoundingBox.mMax.z;
+
+    mesh.mNumBones = d3dmesh.mMeshData.mBones.size();
+    mesh.mNumFaces = d3dmesh.mMeshData.mLODs[0].mNumPrimitives;
+    mesh.mPrimitiveTypes = aiPrimitiveType_TRIANGLE;
+    mesh.mNumVertices = d3dmesh.mMeshData.mLODs[0].mVertexCount;
+
+    const uint8_t *d3dmeshData = d3dmesh.async;
+
+    for (uint32_t index = 0; index < d3dmesh.mMeshData.mVertexStates[0].mIndexBufferCount; ++index)
+    {
+        assert(d3dmesh.mMeshData.mVertexStates[0].mpIndexBuffer[index].mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_U16);
+
+        if (d3dmesh.mMeshData.mVertexStates[0].mpIndexBuffer[index].mBufferUsage != eGFXPlatformBufferUsage::eGFXPlatformBuffer_Index)
+        {
+            d3dmeshData += d3dmesh.mMeshData.mVertexStates[0].mpIndexBuffer[index].mStride * d3dmesh.mMeshData.mVertexStates[0].mpIndexBuffer[index].mCount;
+
+            continue;
+        }
+
+        mesh.mNumFaces = d3dmesh.mMeshData.mVertexStates[0].mpIndexBuffer[index].mCount / TRIANGLE_INDEX_COUNT;
+        mesh.mFaces = new aiFace[mesh.mNumFaces];
+        for (unsigned int i = 0; i < mesh.mNumFaces; ++i)
+        {
+            mesh.mFaces[i].mNumIndices = TRIANGLE_INDEX_COUNT;
+            mesh.mFaces[i].mIndices = new unsigned int[mesh.mFaces[i].mNumIndices];
+            mesh.mFaces[i].mIndices[0] = *((uint16_t *)d3dmeshData);
+            d3dmeshData += sizeof(uint16_t);
+            mesh.mFaces[i].mIndices[1] = *((uint16_t *)d3dmeshData);
+            d3dmeshData += sizeof(uint16_t);
+            mesh.mFaces[i].mIndices[2] = *((uint16_t *)d3dmeshData);
+            d3dmeshData += sizeof(uint16_t);
+        }
+    }
+
+    const uint8_t *blendIndices = nullptr;
+    const uint8_t *blendWeights = nullptr;
+    // const GFXPlatformAttributeParams *blendIndicesAttribute = nullptr;
+    // const GFXPlatformAttributeParams *blendWeightsAttribute = nullptr;
+    const T3GFXBuffer *blendIndicesBuffer = nullptr;
+    const T3GFXBuffer *blendWeightsBuffer = nullptr;
+
+    for (uint32_t index = 0; index < d3dmesh.mMeshData.mVertexStates[0].mVertexBufferCount; ++index)
+    {
+
+        if (d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position)
+        {
+            assert(d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_UN16x4);
+
+            d3dmeshData += 4 * sizeof(uint16_t) * d3dmesh.mMeshData.mLODs[0].mVertexStart; // Skip vertices for other LODs
+            mesh.mVertices = new aiVector3D[mesh.mNumVertices];
+            for (unsigned int i = 0; i < mesh.mNumVertices; ++i)
+            {
+                mesh.mVertices[i].x = *((uint16_t *)d3dmeshData) / 65535.0f;
+                d3dmeshData += sizeof(uint16_t);
+                mesh.mVertices[i].y = *((uint16_t *)d3dmeshData) / 65535.0f;
+                d3dmeshData += sizeof(uint16_t);
+                mesh.mVertices[i].z = *((uint16_t *)d3dmeshData) / 65535.0f;
+                d3dmeshData += 2 * sizeof(uint16_t); // Adding two to skip the 4th axis
+
+                mesh.mVertices[i].x = mesh.mVertices[i].x * d3dmesh.mMeshData.mPositionScale.x + d3dmesh.mMeshData.mPositionOffset.x;
+                mesh.mVertices[i].y = mesh.mVertices[i].y * d3dmesh.mMeshData.mPositionScale.y + d3dmesh.mMeshData.mPositionOffset.y;
+                mesh.mVertices[i].z = mesh.mVertices[i].z * d3dmesh.mMeshData.mPositionScale.z + d3dmesh.mMeshData.mPositionOffset.z;
+            }
+        }
+        else if (d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal)
+        {
+            assert(d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4);
+
+            if (mesh.mNormals != nullptr)
+            {
+                continue;
+            }
+            mesh.mNormals = new aiVector3D[mesh.mNumVertices];
+            for (unsigned int i = 0; i < mesh.mNumVertices; ++i)
+            {
+                mesh.mNormals[i].x = (*(int8_t *)d3dmeshData) / 127.0f;
+                d3dmeshData += sizeof(int8_t);
+                mesh.mNormals[i].y = (*(int8_t *)d3dmeshData) / 127.0f;
+                d3dmeshData += sizeof(int8_t);
+                mesh.mNormals[i].z = (*(int8_t *)d3dmeshData) / 127.0f;
+                d3dmeshData += 2 * sizeof(int8_t);
+            }
+        }
+        else if (d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent)
+        {
+            assert(d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4);
+
+            mesh.mTangents = new aiVector3D[mesh.mNumVertices];
+            for (unsigned int i = 0; i < mesh.mNumVertices; ++i)
+            {
+                mesh.mTangents[i].x = (*(int8_t *)d3dmeshData) / 127.0f;
+                d3dmeshData += sizeof(int8_t);
+                mesh.mTangents[i].y = (*(int8_t *)d3dmeshData) / 127.0f;
+                d3dmeshData += sizeof(int8_t);
+                mesh.mTangents[i].z = (*(int8_t *)d3dmeshData) / 127.0f;
+                d3dmeshData += 2 * sizeof(int8_t);
+            }
+        }
+        else if (d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord)
+        {
+            d3dmeshData += d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mStride * d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mCount;
+        }
+        else if (d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Color)
+        {
+            d3dmeshData += d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mStride * d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mCount;
+        }
+        else if (d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendIndex)
+        {
+            assert(d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_U8x4);
+
+            blendIndices = d3dmeshData;
+            ptrdiff_t offset = d3dmeshData - d3dmesh.async;
+            assert(offset == 0x2592c);
+            // blendIndicesAttribute = &d3dmesh.mMeshData.mVertexStates[0].mAttributes[index];
+            blendIndicesBuffer = &d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index];
+            d3dmeshData += d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mStride * d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mCount;
+        }
+        else if (d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendWeight)
+        {
+            assert(d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2);
+
+            blendWeights = d3dmeshData;
+            // blendWeightsAttribute = &d3dmesh.mMeshData.mVertexStates[0].mAttributes[index];
+            blendWeightsBuffer = &d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index];
+            d3dmeshData += d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mStride * d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mCount;
+        }
+    }
+
+    if (blendIndices != nullptr && blendWeights != nullptr)
+    {
+        assert(blendIndicesBuffer->mCount == blendWeightsBuffer->mCount);
+        std::vector<std::vector<aiVertexWeight>> vectors(mesh.mNumBones);
+
+        for (uint32_t i = 0; i < blendIndicesBuffer->mCount; ++i)
+        {
+            uint32_t d3dBlendData = *(uint32_t *)(blendWeights);
+            if (*blendIndices >= mesh.mNumBones)
+            {
+                TTH_LOG_ERROR("blend index %d out of bounds!\n", *blendIndices);
+            }
+
+            vectors[*(blendIndices++)].emplace_back(i, 1.0f - (float)(d3dBlendData & 0x3ff) / 1023.0f / 8.0f - (float)(d3dBlendData >> 30) / 8.0f -
+                                                           (float)(d3dBlendData >> 10 & 0x3ff) / 1023.0f / 3.0f - (float)(d3dBlendData >> 20 & 0x3ff) / 1023.0f / 4.0f);
+            vectors[*(blendIndices++)].emplace_back(i, (float)(d3dBlendData & 0x3ff) / 1023.0f / 8.0f + (float)(d3dBlendData >> 30) / 8.0f);
+            vectors[*(blendIndices++)].emplace_back(i, (float)(d3dBlendData >> 10 & 0x3ff) / 1023.0f / 3.0f);
+            vectors[*(blendIndices++)].emplace_back(i, (float)(d3dBlendData >> 20 & 0x3ff) / 1023.0f / 4.0f);
+
+            blendWeights += sizeof(d3dBlendData);
+        }
+
+        mesh.mBones = new aiBone *[mesh.mNumBones];
+
+        for (unsigned int i = 0; i < mesh.mNumBones; ++i)
+        {
+            mesh.mBones[i] = new aiBone();
+            mesh.mBones[i]->mName.length = snprintf(mesh.mBones[i]->mName.data, sizeof(mesh.mBones[i]->mName.data), "%016lX", d3dmesh.mMeshData.mBones[i].mBoneName.mCrc64);
+
+            mesh.mBones[i]->mNode = scene.mRootNode->FindNode(mesh.mBones[i]->mName);
+            GetGlobalMatrix(mesh.mBones[i]->mOffsetMatrix, *mesh.mBones[i]->mNode);
+            aiMatrix4Inverse(&mesh.mBones[i]->mOffsetMatrix);
+
+            mesh.mBones[i]->mNumWeights = vectors[i].size();
+            mesh.mBones[i]->mWeights = new aiVertexWeight[mesh.mBones[i]->mNumWeights];
+            for (unsigned int j = 0; j < mesh.mBones[i]->mNumWeights; ++j)
+            {
+                mesh.mBones[i]->mWeights[j] = vectors[i][j];
+            }
+        }
+    }
+
+    return 0;
+}
+
+static void LogCallback(const char *msg, char *userData) { TTH_LOG_INFO("%s\n", msg); }
+
+errno_t ExportAsset(const Skeleton &skeleton, const Animation &animation, const D3DMesh &mesh)
 {
     aiLogStream stream;
     stream.callback = LogCallback;
@@ -272,9 +540,26 @@ errno_t ExportAsset(const Skeleton &skeleton, const Animation &animation)
         }
     }
 
+    scene.mNumMeshes = 1;
+    scene.mMeshes = new aiMesh *[1];
+    scene.mMeshes[0] = new aiMesh();
+    scene.mRootNode->mChildren[0]->mMeshes = new unsigned int[1];
+    scene.mRootNode->mChildren[0]->mNumMeshes = 1;
+    scene.mRootNode->mChildren[0]->mMeshes[0] = 0;
+
+    // scene.mNumMaterials = 1;
+    // scene.mMaterials = new aiMaterial *[scene.mNumMaterials];
+    // scene.mMaterials[0] = new aiMaterial();
+
+    err = ConvertD3DMesh(mesh, *scene.mMeshes[0], scene);
+    if (err)
+    {
+        return err;
+    }
+
     Assimp::Exporter exporter;
 
-    err = exporter.Export(&scene, "glb2", "assimpTWD.glb", aiProcess_ValidateDataStructure | aiProcess_LimitBoneWeights);
+    err = exporter.Export(&scene, "glb2", "assimpTWD.glb", aiProcess_ValidateDataStructure);
     if (err)
     {
         TTH_LOG_ERROR("%s\n", exporter.GetErrorString());

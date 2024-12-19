@@ -1,3 +1,5 @@
+#pragma once
+
 #include <tth/stream/stream.hpp>
 
 namespace TTH

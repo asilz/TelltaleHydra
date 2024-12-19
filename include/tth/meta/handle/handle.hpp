@@ -67,6 +67,8 @@ class HandleBase
         }
         return size;
     }
+    virtual ~HandleBase() {};
+
     Symbol symbol;
     int64_t a8;
     static constexpr bool IS_BLOCKED = false;
@@ -143,6 +145,7 @@ template <class T> class Handle : public HandleBase
         }
         return size;
     }
+    virtual ~Handle() {}
     static constexpr bool IS_BLOCKED = true;
 };
 } // namespace TTH
