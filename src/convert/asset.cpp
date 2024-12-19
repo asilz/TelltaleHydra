@@ -304,6 +304,18 @@ errno_t ConvertAnimation(const Animation &animation, aiAnimation &assimpAnimatio
     return 0;
 }
 
+errno_t GetGlobalMatrix(aiMatrix4x4 &result, const aiNode &node)
+{
+    if (node.mParent != nullptr)
+    {
+        aiMatrix4x4 parentGlobalTransform;
+        GetGlobalMatrix(parentGlobalTransform, *node.mParent);
+        result *= parentGlobalTransform;
+    }
+    result *= node.mTransformation;
+    return 0;
+}
+
 #define TRIANGLE_INDEX_COUNT 3
 
 errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scene)
@@ -382,6 +394,10 @@ errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scen
         {
             assert(d3dmesh.mMeshData.mVertexStates[0].mAttributes[index].mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4);
 
+            if (mesh.mNormals != nullptr)
+            {
+                continue;
+            }
             mesh.mNormals = new aiVector3D[mesh.mNumVertices];
             for (unsigned int i = 0; i < mesh.mNumVertices; ++i)
             {
@@ -468,6 +484,9 @@ errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scen
             mesh.mBones[i]->mName.length = snprintf(mesh.mBones[i]->mName.data, sizeof(mesh.mBones[i]->mName.data), "%016lX", d3dmesh.mMeshData.mBones[i].mBoneName.mCrc64);
 
             mesh.mBones[i]->mNode = scene.mRootNode->FindNode(mesh.mBones[i]->mName);
+            GetGlobalMatrix(mesh.mBones[i]->mOffsetMatrix, *mesh.mBones[i]->mNode);
+            aiMatrix4Inverse(&mesh.mBones[i]->mOffsetMatrix);
+
             mesh.mBones[i]->mNumWeights = vectors[i].size();
             mesh.mBones[i]->mWeights = new aiVertexWeight[mesh.mBones[i]->mNumWeights];
             for (unsigned int j = 0; j < mesh.mBones[i]->mNumWeights; ++j)
@@ -500,7 +519,7 @@ errno_t ExportAsset(const Skeleton &skeleton, const Animation &animation, const 
         return err;
     }
 
-    scene.mNumAnimations = 0;
+    scene.mNumAnimations = 1;
     scene.mAnimations = new aiAnimation *[1];
     scene.mAnimations[0] = new aiAnimation();
 
