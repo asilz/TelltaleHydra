@@ -152,7 +152,7 @@ class PropertySet
         NameValuePair *pairs;
 
         TypeGroup() : typeSymbol(0), pairCount(0), pairs(nullptr) {}
-        ~TypeGroup() { delete pairs; }
+        ~TypeGroup() { delete[] pairs; }
     };
 
     enum PropertyFlags

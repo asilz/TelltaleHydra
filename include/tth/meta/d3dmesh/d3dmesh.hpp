@@ -1103,9 +1103,18 @@ struct T3GFXVertexState
         size += stream.Read(&this->mVertexBufferCount, sizeof(this->mVertexBufferCount));
         size += stream.Read(&this->mAttributeCount, sizeof(this->mAttributeCount));
 
+        for (uint32_t i = 0; i < mAttributeCount; ++i)
+        {
+            int32_t err = this->mAttributes[i].Read(stream, false);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+        }
         for (uint32_t i = 0; i < mIndexBufferCount; ++i)
         {
-            int32_t err = this->mpIndexBuffer[i].Read(stream);
+            int32_t err = this->mpIndexBuffer[i].Read(stream, false);
             if (err < 0)
             {
                 return err;
@@ -1114,22 +1123,14 @@ struct T3GFXVertexState
         }
         for (uint32_t i = 0; i < mVertexBufferCount; ++i)
         {
-            int32_t err = this->mpVertexBuffer[i].Read(stream);
+            int32_t err = this->mpVertexBuffer[i].Read(stream, false);
             if (err < 0)
             {
                 return err;
             }
             size += err;
         }
-        for (uint32_t i = 0; i < mAttributeCount; ++i)
-        {
-            int32_t err = this->mAttributes[i].Read(stream);
-            if (err < 0)
-            {
-                return err;
-            }
-            size += err;
-        }
+
         return size;
     }
     inline int32_t Write_(Stream &stream) const
@@ -4189,7 +4190,7 @@ struct T3MeshData
             size += mpCPUSkinningData->Read(stream);
         }
 
-        size += mVertexStates.Read(stream);
+        size += mVertexStates.Read(stream, false);
 
         return size;
     }
@@ -4655,7 +4656,7 @@ class D3DMesh
         size += stream.Read(&this->mLODParamCRC, sizeof(this->mLODParamCRC));
 
         size += stream.Read(&this->mAsyncResourceCount, sizeof(this->mAsyncResourceCount));
-        mAsyncResources = new AsyncResource[mAsyncResourceCount];
+        this->mAsyncResources = new AsyncResource[mAsyncResourceCount];
         for (uint32_t i = 0; i < mAsyncResourceCount; ++i)
         {
             mAsyncResources[i].nameHash.Read(stream);
@@ -4796,8 +4797,9 @@ class D3DMesh
 
     ~D3DMesh()
     {
+        delete[] mAsyncResources;
         delete mpOcclusionMeshData;
-        delete async;
+        delete[] async;
     }
 
     class String mName;
