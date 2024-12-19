@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tth/meta/animation/animation.hpp>
+#include <tth/meta/d3dmesh/d3dmesh.hpp>
 #include <tth/meta/skeleton/skeleton.hpp>
 
 namespace TTH

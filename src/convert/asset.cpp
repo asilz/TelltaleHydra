@@ -8,10 +8,9 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <cassert>
+#include <tth/convert/asset.hpp>
 #include <tth/core/log.hpp>
-#include <tth/meta/animation/animation.hpp>
 #include <tth/meta/crc64/crc64.hpp>
-#include <tth/meta/skeleton/skeleton.hpp>
 
 namespace TTH
 {
@@ -225,6 +224,22 @@ errno_t ConvertAnimation(const Animation &animation, aiAnimation &assimpAnimatio
     }
 
     return 0;
+}
+
+errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh)
+{
+    mesh.mAABB.mMin.x = d3dmesh.mMeshData.mBoundingBox.mMin.x;
+    mesh.mAABB.mMin.y = d3dmesh.mMeshData.mBoundingBox.mMin.y;
+    mesh.mAABB.mMin.z = d3dmesh.mMeshData.mBoundingBox.mMin.z;
+    mesh.mAABB.mMax.x = d3dmesh.mMeshData.mBoundingBox.mMax.x;
+    mesh.mAABB.mMax.y = d3dmesh.mMeshData.mBoundingBox.mMax.y;
+    mesh.mAABB.mMax.z = d3dmesh.mMeshData.mBoundingBox.mMax.z;
+
+    mesh.mNumBones = d3dmesh.mMeshData.mBones.size();
+    mesh.mNumFaces = d3dmesh.mMeshData.mLODs[0].mNumPrimitives;
+    mesh.mNumVertices = d3dmesh.mMeshData.mLODs[0].mVertexCount;
+
+        return 0;
 }
 
 static void LogCallback(const char *msg, char *userData)

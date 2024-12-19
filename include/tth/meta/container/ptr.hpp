@@ -10,8 +10,8 @@ namespace TTH
 template <class T> class Ptr : public std::unique_ptr<T>
 {
   private:
-    inline int32_t Read_(Stream &stream) { return ReadObject<T>(**this, stream); }
-    inline int32_t Write_(Stream &stream) const { return WriteObject<T>(**this, stream); }
+    inline int32_t Read_(Stream &stream) { return ReadObject<T>(**this, stream, false); }
+    inline int32_t Write_(Stream &stream) const { return WriteObject<T>(**this, stream, false); }
 
   public:
     int32_t Read(Stream &stream) { return Read_(stream); }

@@ -6,23 +6,23 @@
 namespace TTH
 {
 
-class String : private std::string
+class String : public std::string
 {
   private:
     inline int32_t Read_(Stream &stream)
     {
 
         int32_t size;
-        stream.Read(&size, sizeof(size));
+        (void)stream.Read(&size, sizeof(size));
         this->resize(size);
-        size += stream.Read(this->data(), size) + 4;
-        return size;
+        (void)stream.Read(this->data(), size);
+        return size + sizeof(size);
     }
     inline int32_t Write_(Stream &stream) const
     {
         int32_t size = this->size();
         stream.Write(&size, sizeof(size));
-        size += stream.Write(this->c_str(), this->size()) + 4;
+        size += stream.Write(this->c_str(), this->size());
         return size;
     }
 
@@ -34,7 +34,7 @@ class String : private std::string
         {
             return err;
         };
-        return Read_(stream);
+        return Read_(stream) + 4;
     }
     int32_t Read(Stream &stream, bool blocked)
     {

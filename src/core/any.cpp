@@ -5,6 +5,7 @@
 #include <tth/meta/container/map.hpp>
 #include <tth/meta/container/sarray.hpp>
 #include <tth/meta/container/set.hpp>
+#include <tth/meta/d3dmesh/d3dmesh.hpp>
 #include <tth/meta/handle/handle.hpp>
 #include <tth/meta/linalg/quaternion.hpp>
 #include <tth/meta/linalg/trange.hpp>
@@ -993,7 +994,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ScriptEnum : LightComposerLightSourceQuadrant>();
         break;
     case 0x52A09151F1C3F2C7:
-        // SetType<Handle<T3Texture>>();
+        SetType<Handle<T3Texture>>();
         break;
     case 0x533E28DB4F24152B:
         // SetType<EnlightenModule::EnumeQuality>();
@@ -1734,7 +1735,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<AnimatedValueInterface<Handle<SoundEventData>>>();
         break;
     case 0x9004C5587575D6C0:
-        // SetType<bool>();
+        SetType<bool>();
         break;
     case 0x900DB52347B506E5:
         // SetType<Agent>();
@@ -2157,7 +2158,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Style>();
         break;
     case 0xBAE4CBD77F139A91:
-        // SetType<float>();
+        SetType<float>();
         break;
     case 0xBAF342C1FC31C370:
         // SetType<T3GFXVertexState>();
@@ -2631,7 +2632,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<DCArray<String>>>();
         break;
     case 0xE2BA743E952F9338:
-        // SetType<T3MaterialData>();
+        SetType<T3MaterialData>();
         break;
     case 0xE2BF28F948F35B68:
         // SetType<SingleValue<Color>>();
