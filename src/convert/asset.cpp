@@ -8,6 +8,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <cassert>
+#include <cinttypes>
 #include <tth/convert/asset.hpp>
 #include <tth/core/log.hpp>
 #include <tth/meta/crc64/crc64.hpp>
@@ -98,14 +99,14 @@ errno_t ConvertSkeleton(const Skeleton &skeleton, aiNode &sceneNode)
     for (auto const &bone : skeleton.mEntries)
     {
         char name[32];
-        snprintf(name, sizeof(name), "%016lX", bone.mJointName.mCrc64);
+        snprintf(name, sizeof(name), "%016" PRIX64, bone.mJointName.mCrc64);
         aiNode *node = new aiNode(name);
         node->mTransformation =
             aiMatrix4x4(aiVector3D(1.0f), aiQuaternion(bone.mLocalQuat.w, bone.mLocalQuat.x, bone.mLocalQuat.y, bone.mLocalQuat.z), aiVector3D(bone.mLocalPos.x, bone.mLocalPos.y, bone.mLocalPos.z));
 
         if (bone.mParentIndex >= 0)
         {
-            snprintf(name, sizeof(name), "%016lX", bone.mParentName.mCrc64);
+            snprintf(name, sizeof(name), "%016" PRIX64, bone.mParentName.mCrc64);
             node->mParent = sceneNode.FindNode(name);
             node->mParent->addChildren(1, &node);
         }
@@ -121,23 +122,11 @@ errno_t ConvertSkeleton(const Skeleton &skeleton, aiNode &sceneNode)
 
 errno_t ConvertAnimation(const Animation &animation, aiAnimation &assimpAnimation)
 {
-    assimpAnimation.mName = aiString("HydraAnimation");
+    assimpAnimation.mName.length = snprintf(assimpAnimation.mName.data, sizeof(assimpAnimation.mName.data), "%016" PRIX64, animation.mName.mCrc64);
     assimpAnimation.mDuration = animation.mLength;
     assimpAnimation.mTicksPerSecond = 1.0;
 
-    size_t maxFrameCount = 0; // I don't know if this is reliable
-    for (int32_t i = 0; i < animation.mInterfaceCount; ++i)
-    {
-        KeyframedValue<Transform> *keyframedValue = animation.mValues[i].GetTypePtr<KeyframedValue<Transform>>();
-        if (keyframedValue != nullptr && animation.mInterfaceSymbols[i].mCrc64 == CRC64_CaseInsensitive(0, "root"))
-        {
-            maxFrameCount = keyframedValue->mSamples.size();
-        }
-    }
-    if (maxFrameCount == 0)
-    {
-        return -TTH_TYPE_NOT_FOUND;
-    }
+    size_t maxFrameCount = 256; // Bad solution
 
     const CompressedSkeletonPoseKeys2 *cspk = nullptr;
     for (int32_t i = 0; i < animation.mInterfaceCount && cspk == nullptr; ++i)
@@ -182,13 +171,15 @@ errno_t ConvertAnimation(const Animation &animation, aiAnimation &assimpAnimatio
         assimpAnimation.mChannels[i]->mRotationKeys = new aiQuatKey[maxFrameCount];
 
         assimpAnimation.mChannels[i]->mNodeName.length =
-            snprintf(assimpAnimation.mChannels[i]->mNodeName.data, sizeof(assimpAnimation.mChannels[i]->mNodeName.data), "%016lX", ((uint64_t *)(cspkBuf + header.mSampleDataSize))[i]);
+            snprintf(assimpAnimation.mChannels[i]->mNodeName.data, sizeof(assimpAnimation.mChannels[i]->mNodeName.data), "%016" PRIX64, ((uint64_t *)(cspkBuf + header.mSampleDataSize))[i]);
     }
 
     for (const uint32_t *headerData = (uint32_t *)(cspkBuf + header.mSampleDataSize + header.mBoneCount * sizeof(uint64_t)); headerData < (uint32_t *)(cspk->mpData + cspk->mDataSize); ++headerData)
     {
         if ((*headerData & 0x40000000) == 0) // Vector
         {
+            assert(assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumPositionKeys < maxFrameCount);
+
             assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mPositionKeys[++assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumPositionKeys - 1].mTime =
                 (float)(*headerData & 0xffff) * 1.525902e-05 * header.mRangeTime;
             if ((int32_t)*headerData < 0)
@@ -231,6 +222,7 @@ errno_t ConvertAnimation(const Animation &animation, aiAnimation &assimpAnimatio
         }
         else // Quaternion
         {
+            assert(assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys <= maxFrameCount);
             assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mRotationKeys[++assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys - 1].mTime =
                 (float)(*headerData & 0xffff) * 1.525902e-05 * header.mRangeTime;
             if ((int32_t)*headerData < 0)
@@ -479,7 +471,7 @@ errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scen
         for (unsigned int i = 0; i < mesh.mNumBones; ++i)
         {
             mesh.mBones[i] = new aiBone();
-            mesh.mBones[i]->mName.length = snprintf(mesh.mBones[i]->mName.data, sizeof(mesh.mBones[i]->mName.data), "%016lX", d3dmesh.mMeshData.mBones[i].mBoneName.mCrc64);
+            mesh.mBones[i]->mName.length = snprintf(mesh.mBones[i]->mName.data, sizeof(mesh.mBones[i]->mName.data), "%016" PRIX64, d3dmesh.mMeshData.mBones[i].mBoneName.mCrc64);
 
             mesh.mBones[i]->mNode = scene.mRootNode->FindNode(mesh.mBones[i]->mName);
             GetGlobalMatrix(mesh.mBones[i]->mOffsetMatrix, *mesh.mBones[i]->mNode);
@@ -499,13 +491,13 @@ errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scen
 
 static void LogCallback(const char *msg, char *userData) { TTH_LOG_INFO("%s\n", msg); }
 
-errno_t ExportAsset(char *resultPath, const Skeleton &skeleton, const Animation &animation, const D3DMesh &mesh)
+errno_t ExportAsset(const char *resultPath, const Skeleton &skeleton, const Animation *animations, const D3DMesh *meshes, size_t animationCount, size_t meshCount)
 {
     aiLogStream stream;
     stream.callback = LogCallback;
     aiAttachLogStream(&stream);
 
-    errno_t err;
+    errno_t err = 0;
 
     aiScene scene = aiScene();
     scene.mName = "TelltaleHydra";
@@ -517,42 +509,46 @@ errno_t ExportAsset(char *resultPath, const Skeleton &skeleton, const Animation 
         return err;
     }
 
-    scene.mNumAnimations = 1;
-    scene.mAnimations = new aiAnimation *[1];
-    scene.mAnimations[0] = new aiAnimation();
+    scene.mNumAnimations = animationCount;
+    scene.mAnimations = new aiAnimation *[scene.mNumAnimations];
 
-    err = ConvertAnimation(animation, *scene.mAnimations[0]);
-    if (err)
+    for (size_t i = 0; i < scene.mNumAnimations; ++i)
     {
-        return err;
-    }
+        scene.mAnimations[i] = new aiAnimation();
 
-    for (unsigned int i = 0; i < scene.mAnimations[0]->mNumChannels; ++i) // TODO: Find a better way
-    {
-        for (unsigned int j = 0; j < scene.mAnimations[0]->mChannels[i]->mNumPositionKeys; ++j)
+        err = ConvertAnimation(animations[i], *scene.mAnimations[i]);
+        if (err)
         {
-            aiQuaternion quat;
-            aiVector3D vec;
-            scene.mRootNode->FindNode(scene.mAnimations[0]->mChannels[i]->mNodeName)->mTransformation.DecomposeNoScaling(quat, vec);
-            scene.mAnimations[0]->mChannels[i]->mPositionKeys[j].mValue *= vec.Length();
+            return err;
+        }
+
+        for (unsigned int j = 0; j < scene.mAnimations[i]->mNumChannels; ++j) // TODO: Find a better way
+        {
+            for (unsigned int k = 0; k < scene.mAnimations[i]->mChannels[j]->mNumPositionKeys; ++k)
+            {
+                aiQuaternion quat;
+                aiVector3D vec;
+                scene.mRootNode->FindNode(scene.mAnimations[i]->mChannels[j]->mNodeName)->mTransformation.DecomposeNoScaling(quat, vec);
+                scene.mAnimations[i]->mChannels[j]->mPositionKeys[k].mValue *= vec.Length();
+            }
         }
     }
 
-    scene.mNumMeshes = 1;
-    scene.mMeshes = new aiMesh *[1];
-    scene.mMeshes[0] = new aiMesh();
-    scene.mRootNode->mChildren[0]->mMeshes = new unsigned int[1];
-    scene.mRootNode->mChildren[0]->mNumMeshes = 1;
-    scene.mRootNode->mChildren[0]->mMeshes[0] = 0;
-
-    // scene.mNumMaterials = 1;
-    // scene.mMaterials = new aiMaterial *[scene.mNumMaterials];
-    // scene.mMaterials[0] = new aiMaterial();
-
-    err = ConvertD3DMesh(mesh, *scene.mMeshes[0], scene);
-    if (err)
+    scene.mNumMeshes = meshCount;
+    scene.mMeshes = new aiMesh *[meshCount];
+    scene.mRootNode->mChildren[0]->mMeshes = new unsigned int[scene.mNumMeshes];
+    scene.mRootNode->mChildren[0]->mNumMeshes = scene.mNumMeshes;
+    for (unsigned int i = 0; i < scene.mNumMeshes; ++i)
     {
-        return err;
+        scene.mMeshes[i] = new aiMesh();
+
+        scene.mRootNode->mChildren[0]->mMeshes[i] = i;
+
+        err = ConvertD3DMesh(meshes[i], *scene.mMeshes[i], scene);
+        if (err)
+        {
+            return err;
+        }
     }
 
     Assimp::Exporter exporter;

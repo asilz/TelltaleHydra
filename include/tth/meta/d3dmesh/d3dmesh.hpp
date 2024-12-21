@@ -4642,7 +4642,6 @@ class D3DMesh
             return err;
         }
         size += err;
-        TTH_LOG_INFO("%s\n", this->mName.c_str());
 
         size += stream.Read(&this->mVersion, sizeof(this->mVersion));
         err = this->mToolProps.Read(stream);

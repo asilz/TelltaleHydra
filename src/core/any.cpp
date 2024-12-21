@@ -1,3 +1,4 @@
+#include <cassert>
 #include <tth/core/any.hpp>
 #include <tth/meta/animation/animation.hpp>
 #include <tth/meta/bitset/base.hpp>
@@ -2023,7 +2024,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Map<String, LogicGroup::LogicItem, less<String>>>();
         break;
     case 0xA98F0652295DE685:
-        // SetType<EnumT3MaterialLightModelType>();
+        SetType<EnumT3MaterialLightModelType>();
         break;
     case 0xAA9E970095A20B0E:
         // SetType<StyleIdleTransitionsRes>();
@@ -2949,6 +2950,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
     default:
         break;
     }
+    assert(read_ != nullptr);
 }
 
 } // namespace TTH
