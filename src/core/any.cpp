@@ -34,7 +34,7 @@ using uint16 = uint16_t;
 using uint8 = uint8_t;
 
 using unsigned__int64 = uint64_t;
-#ifndef __WIN32__
+#ifndef _WIN32
 using __int64 = int64_t;
 #endif
 
