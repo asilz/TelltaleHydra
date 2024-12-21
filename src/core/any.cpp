@@ -16,6 +16,7 @@
 #include <tth/meta/t3texture/color.hpp>
 #include <tth/meta/t3texture/swizzle.hpp>
 #include <tth/meta/t3texture/t3texture.hpp>
+#include <tth/meta/uid/uid.hpp>
 
 namespace TTH
 {
@@ -30,7 +31,8 @@ typedef uint32_t uint32;
 typedef uint16_t uint16;
 typedef uint8_t uint8;
 
-typedef int64_t unsigned__int64;
+typedef uint64_t unsigned__int64;
+typedef int64_t __int64;
 
 Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(nullptr), write_(nullptr), typeName_(nullptr)
 {
@@ -85,7 +87,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<HingeJointKey>();
         break;
     case 0x04D13C680B64ADC3:
-        // SetType<DCArray<unsignedshort>>();
+        SetType<DCArray<unsigned short>>();
         break;
     case 0x04EE8AB98C0E7346:
         // SetType<SingleValue<PhonemeKey>>();
@@ -187,7 +189,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnvironmentLight>();
         break;
     case 0x0E6BD8C1195FF49F:
-        // SetType<Map<String, Map<String, String, less<String>>, less<String>>>();
+        SetType<Map<String, Map<String, String, std::less<String>>, std::less<String>>>();
         break;
     case 0x0EE94831CBA42B32:
         SetType<DCArray<KeyframedValue<Vector2>::Sample>>();
@@ -205,7 +207,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         SetType<KeyframedValue<Quaternion>>();
         break;
     case 0x101E4BF52A9999AC:
-        // SetType<long>();
+        SetType<long>();
         break;
     case 0x106930CCC0A67F81:
         // SetType<DCArray<Guide>>();
@@ -214,7 +216,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<CompressedKeys<Vector3>>();
         break;
     case 0x11044749232970C0:
-        // SetType<uint64>();
+        SetType<uint64>();
         break;
     case 0x112AFB1D97DE426F:
         // SetType<EnumParticlePropModifier>();
@@ -256,7 +258,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<estore>();
         break;
     case 0x13C9CDF379EF28E0:
-        // SetType<Map<int, PropertySet, less<int>>>();
+        SetType<Map<int, PropertySet, std::less<int>>>();
         break;
     case 0x14405BB0FDAEF3F3:
         // SetType<EnumT3LightEnvShadowType>();
@@ -265,7 +267,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<T3MaterialSwizzleParams>();
         break;
     case 0x14B01C37623D58CB:
-        // SetType<DCArray<Handle<T3Texture>>>();
+        SetType<DCArray<Handle<T3Texture>>>();
         break;
     case 0x14E382987D757E47:
         SetType<KeyframedValue<Symbol>>();
@@ -286,7 +288,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<IdleSlotDefaults>();
         break;
     case 0x1793F7CC87414A9C:
-        // SetType<DCArray<T3MaterialNestedMaterial>>();
+        SetType<DCArray<T3MaterialNestedMaterial>>();
         break;
     case 0x17A22BCB7F71DA7C:
         // SetType<AnimatedValueInterface<Handle<SoundBusSnapshot::Snapshot>>>();
@@ -328,7 +330,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<CompressedKeys<Handle<T3Texture>>>();
         break;
     case 0x1BBD9C16A1D7261C:
-        // SetType<unsignedshort>();
+        SetType<unsigned short>();
         break;
     case 0x1BE31F84BB675B71:
         // SetType<DCArray<RenderObject_Mesh::MeshInstance>>();
@@ -349,16 +351,16 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Handle<T3OverlayData>>();
         break;
     case 0x1CF4C103D0290F37:
-        // SetType<unsignedchar>();
+        SetType<unsigned char>();
         break;
     case 0x1D0BCFF71E6BC2E1:
-        // SetType<DCArray<Handle<PropertySet>>>();
+        SetType<DCArray<Handle<PropertySet>>>();
         break;
     case 0x1D6B01580F1491E6:
         // SetType<HandleLock<Animation>>();
         break;
     case 0x1DDC6104AA9DFDC0:
-        // SetType<DCArray<T3MaterialPreShader>>();
+        SetType<DCArray<T3MaterialPreShader>>();
         break;
     case 0x1DF7C31EA25EAE57:
         // SetType<KeyframedValue<Handle<SoundBusSnapshot::SnapshotSuite>>>();
@@ -376,7 +378,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<FileNameBase>();
         break;
     case 0x1EEF71B2306B5B6C:
-        // SetType<uint16>();
+        SetType<uint16>();
         break;
     case 0x1EF9BD7B68F3F685:
         // SetType<DCArray<KeyframedValue<Handle<SoundBusSnapshot::Snapshot>>::Sample>>();
@@ -388,7 +390,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DlgNodeLink>();
         break;
     case 0x200159CE1F32968E:
-        // SetType<T3MaterialRequirements>();
+        SetType<T3MaterialRequirements>();
         break;
     case 0x20D348E9BF150EC0:
         // SetType<ParticleInverseKinematics>();
@@ -421,7 +423,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<CompressedKeys<Handle<D3DMesh>>>();
         break;
     case 0x2309FB51D434529C:
-        // SetType<BitSetBase<8>>();
+        SetType<BitSetBase<8>>();
         break;
     case 0x238A520C4A924AA6:
         // SetType<EventLoggerEvent>();
@@ -439,10 +441,10 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EventStoragePage>();
         break;
     case 0x24642A39023F0F34:
-        // SetType<DCArray<String>>();
+        SetType<DCArray<String>>();
         break;
     case 0x2491B84DAED1E76B:
-        // SetType<DCArray<T3MaterialPassData>>();
+        SetType<DCArray<T3MaterialPassData>>();
         break;
     case 0x24A03076F08204F4:
         // SetType<FlagsT3LightEnvGroupSet>();
@@ -481,7 +483,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<BGM_HeadTurn_Value>();
         break;
     case 0x268E0B3FC19A48AE:
-        // SetType<int64>();
+        SetType<int64>();
         break;
     case 0x26D936F7FF759D39:
         // SetType<Skeleton>();
@@ -508,7 +510,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<List<int>>();
         break;
     case 0x29653DC4D2D86302:
-        // SetType<int16>();
+        SetType<int16>();
         break;
     case 0x2A2E93F6AF788919:
         // SetType<bussnapshot>();
@@ -526,7 +528,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<AnimatedValueInterface<Handle<D3DMesh>>>();
         break;
     case 0x2B764A50099A3FEF:
-        // SetType<Map<String, Set<Symbol, less<Symbol>>, less<String>>>();
+        SetType<Map<String, Set<Symbol, std::less<Symbol>>, std::less<String>>>();
         break;
     case 0x2B7B462F08600B16:
         // SetType<DialogItem::EnumPlaybackMode>();
@@ -559,7 +561,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ChoreResource::Block>();
         break;
     case 0x2E8076F05492665C:
-        // SetType<DCArray<float>>();
+        SetType<DCArray<float>>();
         break;
     case 0x2EE70BCF1B707D98:
         // SetType<DlgNodeJump>();
@@ -580,7 +582,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ScriptEnum : UseableType>();
         break;
     case 0x2FD428E74998C3F7:
-        // SetType<Set<String, less<String>>>();
+        SetType<Set<String, std::less<String>>>();
         break;
     case 0x2FE13A670E3B9412:
         // SetType<AnimatedValueInterface<Handle<SoundEventSnapshotData>>>();
@@ -589,7 +591,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DlgNodeExit>();
         break;
     case 0x3057C880E751D8C5:
-        // SetType<Handle<Animation>>();
+        SetType<Handle<Animation>>();
         break;
     case 0x30694ADB68E78E3D:
         // SetType<DCArray<ProjectDatabaseIDPair>>();
@@ -637,7 +639,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnlightenModule::EnumeDisplayQuality>();
         break;
     case 0x33C56D9E4438FCD9:
-        // SetType<Map<Symbol, int, less<Symbol>>>();
+        SetType<Map<Symbol, int, std::less<Symbol>>>();
         break;
     case 0x3421FA8D08F00332:
         // SetType<DCArray<ParticlePropConnect>>();
@@ -688,7 +690,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<KeyframedValue<Handle<PhonemeTable>>::Sample>>();
         break;
     case 0x374927061B784594:
-        // SetType<DCArray<Vector3>>();
+        SetType<DCArray<Vector3>>();
         break;
     case 0x37B8C02CC0B488BE:
         // SetType<Handle<EventStorage>>();
@@ -700,7 +702,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Handle<PropertySet>>();
         break;
     case 0x394C43AF4FF52C94:
-        // SetType<Vector3>();
+        SetType<Vector3>();
         break;
     case 0x396E225045FA7F39:
         // SetType<Map<String, AgentMap::AgentMapEntry, less<String>>>();
@@ -709,7 +711,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DlgNodeStats>();
         break;
     case 0x3A195525E24AFC93:
-        // SetType<uint8>();
+        SetType<uint8>();
         break;
     case 0x3A63217C2BB535F3:
         // SetType<SoundEventNameBase>();
@@ -727,7 +729,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnumEmittersEnableType>();
         break;
     case 0x3B160BC2AD5CB101:
-        // SetType<T3MeshLOD>();
+        SetType<T3MeshLOD>();
         break;
     case 0x3B19CEFBA080E62C:
         // SetType<EnumEmitterSpriteAnimationSelection>();
@@ -736,7 +738,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DlgNodeMarker>();
         break;
     case 0x3B965660D71DE2A7:
-        // SetType<DCArray<T3OcclusionMeshBatch>>();
+        SetType<DCArray<T3OcclusionMeshBatch>>();
         break;
     case 0x3BC3CB16F9AA0F31:
         // SetType<List<Handle<T3Texture>>>();
@@ -769,13 +771,13 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ScriptEnum : ReticleDisplayMode>();
         break;
     case 0x3DE8FE133A5A0DB7:
-        // SetType<DCArray<T3MaterialParameter>>();
+        SetType<DCArray<T3MaterialParameter>>();
         break;
     case 0x3E249E7E6F38CCE2:
-        // SetType<T3Texture>();
+        SetType<T3Texture>();
         break;
     case 0x3E597A1F6499DBFD:
-        // SetType<T3MeshTextureIndices>();
+        SetType<T3MeshTextureIndices>();
         break;
     case 0x3E9F3EC23C34F712:
         // SetType<DCArray<T3MeshPropertyEntry>>();
@@ -820,7 +822,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnlightenModule::EnlightenAdaptiveProbeVolumeSettings>();
         break;
     case 0x4252D2F4AC275D24:
-        // SetType<DCArray<Symbol>>();
+        SetType<DCArray<Symbol>>();
         break;
     case 0x42722660D93932DF:
         // SetType<d3dtx>();
@@ -871,7 +873,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Map<String, StyleGuideRef, less<String>>>();
         break;
     case 0x48588668F74FED9F:
-        // SetType<UID::Owner>();
+        SetType<UID::Owner>();
         break;
     case 0x487D0696C99D7761:
         // SetType<EnumEmitterBoneSelection>();
@@ -898,7 +900,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ik>();
         break;
     case 0x4B26A2CA30DE3F32:
-        // SetType<uint32>();
+        SetType<uint32>();
         break;
     case 0x4B5C5357547E165F:
         // SetType<Map<int, Ptr<DialogLine>, less<int>>>();
@@ -913,16 +915,16 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<T3VertexBufferSample<T3PositionSampleData, T3HeapAllocator>>();
         break;
     case 0x4BD04E27E6716EA0:
-        // SetType<UID::Generator>();
+        SetType<UID::Generator>();
         break;
     case 0x4C199A98E11DF819:
-        // SetType<BitSetBase<2>>();
+        SetType<BitSetBase<2>>();
         break;
     case 0x4C19FCA5E018EBB8:
         // SetType<AnimatedValueInterface<unsigned__int64>>();
         break;
     case 0x4CC03BEF63487679:
-        // SetType<Map<int, Symbol, less<int>>>();
+        SetType<Map<int, Symbol, std::less<int>>>();
         break;
     case 0x4D797D8C9D925179:
         // SetType<PhysicsData>();
@@ -952,7 +954,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<PathBase>();
         break;
     case 0x4F1B64D81FC60325:
-        // SetType<Map<String, String, less<String>>>();
+        SetType<Map<String, String, std::less<String>>>();
         break;
     case 0x4F370A28A5E8152B:
         // SetType<SArray<unsignedint, 3>>();
@@ -973,7 +975,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<BlendGraph>();
         break;
     case 0x5035C3ACDCC297D3:
-        // SetType<DCArray<T3MaterialRuntimeProperty>>();
+        SetType<DCArray<T3MaterialRuntimeProperty>>();
         break;
     case 0x508B8F3DE7AADAD2:
         // SetType<EnumParticlePropDriver>();
@@ -1012,7 +1014,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ActorAgentMapper>();
         break;
     case 0x540181F155761548:
-        // SetType<DCArray<Handle<D3DMesh>>>();
+        SetType<DCArray<Handle<D3DMesh>>>();
         break;
     case 0x54268116A226A267:
         // SetType<List<Handle<Scene>>>();
@@ -1057,7 +1059,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<SoundEventName<0>>();
         break;
     case 0x584619F1AE300EEA:
-        // SetType<T3Texture::RegionStreamHeader>();
+        SetType<T3Texture::RegionStreamHeader>();
         break;
     case 0x585829C336CB2FA5:
         // SetType<CompressedSkeletonPoseKeys>();
@@ -1078,7 +1080,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Procedural_LookAt::Constraint>();
         break;
     case 0x59A72EC50742FCD0:
-        // SetType<Map<String, PropertySet, less<String>>>();
+        SetType<Map<String, PropertySet, std::less<String>>>();
         break;
     case 0x59D13F814FD13B69:
         SetType<CompressedSkeletonPoseKeys2>();
@@ -1108,13 +1110,13 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         SetType<DCArray<KeyframedValue<Vector4>::Sample>>();
         break;
     case 0x5AB7A3011948922B:
-        // SetType<KeyframedValue<Handle<D3DMesh>>>();
+        SetType<KeyframedValue<Handle<D3DMesh>>>();
         break;
     case 0x5B2B9A5E74916816:
         // SetType<SingleValue<Handle<SoundBusSnapshot::SnapshotSuite>>>();
         break;
     case 0x5B50C09B7CD0CCF3:
-        // SetType<BinaryBuffer>();
+        SetType<BinaryBuffer>();
         break;
     case 0x5BA42D3DE8EF60AB:
         // SetType<AnimatedValueInterface<PhonemeKey>>();
@@ -1129,7 +1131,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<SoundReverbPreset>();
         break;
     case 0x5D199F8AC4F57196:
-        // SetType<Map<Symbol, float, less<Symbol>>>();
+        SetType<Map<Symbol, float, std::less<Symbol>>>();
         break;
     case 0x5D39DE4AC5468B6E:
         // SetType<KeyframedValue<LocationInfo>>();
@@ -1219,7 +1221,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<T3OcclusionMeshData>();
         break;
     case 0x634167EE598932B9:
-        // SetType<Transform>();
+        SetType<Transform>();
         break;
     case 0x63EA9D46465510F6:
         // SetType<Map<unsignedlong, Font::GlyphInfo, less<unsignedlong>>>();
@@ -1261,13 +1263,13 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnumT3DetailShadingType>();
         break;
     case 0x6708DDFD39E39EB8:
-        // SetType<DCArray<T3MeshLocalTransformEntry>>();
+        SetType<DCArray<T3MeshLocalTransformEntry>>();
         break;
     case 0x67104C20C9691329:
         // SetType<KeyframedValue<Handle<Dlg>>>();
         break;
     case 0x673D28039395A91A:
-        // SetType<SArray<TRange<float>, 3>>();
+        SetType<SArray<TRange<float>, 3>>();
         break;
     case 0x673D6BC4E630EA46:
         // SetType<Handle<PhonemeTable>>();
@@ -1285,7 +1287,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<CompressedKeys<Handle<PropertySet>>>();
         break;
     case 0x691645DFF205619A:
-        // SetType<BitSetBase<4>>();
+        SetType<BitSetBase<4>>();
         break;
     case 0x6917635899F0EF5B:
         // SetType<DCArray<KeyframedValue<Handle<Scene>>::Sample>>();
@@ -1306,7 +1308,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<cameraselectresource>();
         break;
     case 0x6B62F90BD5F79321:
-        // SetType<SArray<unsignedchar, 32>>();
+        SetType<SArray<unsigned char, 32>>();
         break;
     case 0x6B77C806C0E23EA1:
         // SetType<SingleValue<Vector3>>();
@@ -1321,7 +1323,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<EventStorage::PageEntry>>();
         break;
     case 0x6D4051136C21FB5B:
-        // SetType<T3MeshData>();
+        SetType<T3MeshData>();
         break;
     case 0x6DCC6CB4CF833225:
         // SetType<HandleObjectInfo>();
@@ -1329,11 +1331,8 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
     case 0x6DCCD180EF5DB842:
         // SetType<T3RenderStateBlock>();
         break;
-    case 0x6E67F91CAE37F2F0:
-        // SetType<ProjectDatabaseIDPair>();
-        break;
     case 0x6F17E5736E879C8C:
-        // SetType<DCArray<unsignedint>>();
+        SetType<DCArray<unsigned int>>();
         break;
     case 0x6F2E039E6740E40E:
         // SetType<ScriptEnum : LightComposerNodeLocation>();
@@ -1369,13 +1368,13 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<anm>();
         break;
     case 0x73AC7A77C69A13A9:
-        // SetType<DCArray<T3MeshEffectPreloadEntry>>();
+        SetType<DCArray<T3MeshEffectPreloadEntry>>();
         break;
     case 0x73CD313F2A6634FF:
         // SetType<Set<String, StringCompareCaseInsensitive>>();
         break;
     case 0x73E09E0F84717F0A:
-        // SetType<Handle<D3DMesh>>();
+        SetType<Handle<D3DMesh>>();
         break;
     case 0x73E6A067ABDBD2D9:
         // SetType<ScriptEnum : BlendTypes>();
@@ -1387,7 +1386,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<HermiteCurvePathSegment>();
         break;
     case 0x74959B5BA49B660E:
-        // SetType<DCArray<T3MeshMaterial>>();
+        SetType<DCArray<T3MeshMaterial>>();
         break;
     case 0x74A5F683AFAC29ED:
         // SetType<EnlightenModule::EnlightenMeshSettings::AutoUVSettings>();
@@ -1405,7 +1404,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<poiblocking>();
         break;
     case 0x75D9082D642E1791:
-        // SetType<BoundingBox>();
+        SetType<BoundingBox>();
         break;
     case 0x75E3A1B073B8BB2F:
         // SetType<List<HandleLock<Scene>>>();
@@ -1417,10 +1416,10 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<KeyframedValue<ScriptEnum>::Sample>>();
         break;
     case 0x764A963C6BAC44EA:
-        // SetType<T3MeshEffectPreloadDynamicFeatures>();
+        SetType<T3MeshEffectPreloadDynamicFeatures>();
         break;
     case 0x76592B0CF8E8A12F:
-        // SetType<DCArray<T3MeshBoneEntry>>();
+        SetType<DCArray<T3MeshBoneEntry>>();
         break;
     case 0x766BB06D64BF383B:
         // SetType<MeshSceneEnlightenData>();
@@ -1429,13 +1428,13 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnumRenderLightmapUVGenerationType>();
         break;
     case 0x774CFA08CA715D06:
-        // SetType<Animation>();
+        SetType<Animation>();
         break;
     case 0x77752EC5B9F72F50:
         // SetType<Localization::Language>();
         break;
     case 0x7864EA122E854260:
-        // SetType<HandleBase>();
+        SetType<HandleBase>();
         break;
     case 0x789758CB1A8D6628:
         // SetType<DlgNodeConditional>();
@@ -1471,7 +1470,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnlightenModule::EnumeUpdateMethodWithDefault>();
         break;
     case 0x7BBCA244E61F1A07:
-        // SetType<Vector2>();
+        SetType<Vector2>();
         break;
     case 0x7BC15620354C0704:
         // SetType<KeyframedValue<Handle<Font>>>();
@@ -1483,7 +1482,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<PhonemeKey>();
         break;
     case 0x7CACEEBCD26D075C:
-        // SetType<int32>();
+        SetType<int32>();
         break;
     case 0x7CBA2F7647F0AE16:
         // SetType<Handle<Rule>>();
@@ -1504,7 +1503,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ResourceGroups>();
         break;
     case 0x7E69BFAB6FFA19EC:
-        // SetType<T3MeshEffectPreload>();
+        SetType<T3MeshEffectPreload>();
         break;
     case 0x7ED5149ED891D304:
         // SetType<LipSync2>();
@@ -1525,7 +1524,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<CompressedKeys<ScriptEnum>>();
         break;
     case 0x8090795CD87B5B38:
-        // SetType<DCArray<T3MaterialStaticParameter>>();
+        SetType<DCArray<T3MaterialStaticParameter>>();
         break;
     case 0x809DA55341AB9E70:
         // SetType<SoundEventData>();
@@ -1546,7 +1545,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<T3MaterialCompiledData>();
         break;
     case 0x823DB9F90B846250:
-        // SetType<Handle<Skeleton>>();
+        SetType<Handle<Skeleton>>();
         break;
     case 0x826B8E99FDBE2397:
         // SetType<EnumEmitterSpawnShape>();
@@ -1567,13 +1566,13 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<PreloadPackage::ResourceKey>>();
         break;
     case 0x84283CB979D71641:
-        // SetType<Flags>();
+        SetType<Flags>();
         break;
     case 0x849BD029B8FB3C04:
         // SetType<ActorAgentBinding>();
         break;
     case 0x852A87571E57CCF8:
-        // SetType<Sphere>();
+        SetType<Sphere>();
         break;
     case 0x853C6A11208F77EF:
         // SetType<DCArray<MeshSceneLightmapData::Entry>>();
@@ -1609,7 +1608,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<AnimatedValueInterface<Symbol>>();
         break;
     case 0x86DD6FDD80394AB3:
-        // SetType<BoneContraints>();
+        SetType<BoneContraints>();
         break;
     case 0x8758F70880295F9B:
         // SetType<Handle<SoundAmbience::AmbienceDefinition>>();
@@ -1627,19 +1626,19 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<InputMapper::RawEvent>();
         break;
     case 0x881C335AC79F7149:
-        // SetType<DCArray<Color>>();
+        SetType<DCArray<Color>>();
         break;
     case 0x885A35D99A8D1A4D:
-        // SetType<Set<Symbol, less<Symbol>>>();
+        SetType<Set<Symbol, std::less<Symbol>>>();
         break;
     case 0x88E2A4048B7CAC53:
-        // SetType<AnimationValueInterfaceBase>();
+        SetType<AnimationValueInterfaceBase>();
         break;
     case 0x890FBC61216787A2:
         // SetType<ScriptEnum : StruggleType>();
         break;
     case 0x890FE2DA04AADE49:
-        // SetType<Map<String, float, less<String>>>();
+        SetType<Map<String, float, std::less<String>>>();
         break;
     case 0x8911CDF45ADA55C7:
         // SetType<CompressedKeys<SoundEventName<0>>>();
@@ -1672,7 +1671,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Handle<SoundBusSnapshot::SnapshotSuite>>();
         break;
     case 0x8AD17AD4CB809956:
-        // SetType<Map<String, bool, less<String>>>();
+        SetType<Map<String, bool, std::less<String>>>();
         break;
     case 0x8AEB6B64F5F95861:
         // SetType<Map<Symbol, Footsteps2::FootstepBank, less<Symbol>>>();
@@ -1693,7 +1692,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Procedural_LookAt::EnumLookAtComputeStage>();
         break;
     case 0x8C0CD13A87BA8D95:
-        // SetType<BitSetBase<9>>();
+        SetType<BitSetBase<9>>();
         break;
     case 0x8D1A8F0E83A1E29D:
         // SetType<LanguageDB>();
@@ -1708,10 +1707,10 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<SoundBankWaveMap>();
         break;
     case 0x8D953B4CE053F7AC:
-        // SetType<DCArray<int>>();
+        SetType<DCArray<int>>();
         break;
     case 0x8E0C950E1D3BF60C:
-        // SetType<Map<String, int, less<String>>>();
+        SetType<Map<String, int, std::less<String>>>();
         break;
     case 0x8E4726F9B542D02F:
         // SetType<bundle>();
@@ -1741,7 +1740,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Agent>();
         break;
     case 0x90AECEC9208A96B6:
-        // SetType<Map<String, DCArray<String>, less<String>>>();
+        SetType<Map<String, DCArray<String>, std::less<String>>>();
         break;
     case 0x91220203C6648B2A:
         // SetType<DlgNodeStart>();
@@ -1750,7 +1749,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DlgChildSet>();
         break;
     case 0x918069BEE7BDA403:
-        // SetType<AnimatedValueInterface<Quaternion>>();
+        SetType<AnimatedValueInterface<Quaternion>>();
         break;
     case 0x91E8421A820D689C:
         // SetType<Meta::AgentResourceContext>();
@@ -1759,7 +1758,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ScriptEnum : AIPatrolType>();
         break;
     case 0x9352BA2255605A10:
-        // SetType<Map<Symbol, Symbol, less<Symbol>>>();
+        SetType<Map<Symbol, Symbol, std::less<Symbol>>>();
         break;
     case 0x937F5D487A0988E3:
         // SetType<T3SamplerStateBlock>();
@@ -1786,7 +1785,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<CompressedKeys<Handle<SoundAmbience::AmbienceDefinition>>>();
         break;
     case 0x954B47E44A5FFA6E:
-        // SetType<AnimatedValueInterface<bool>>();
+        SetType<AnimatedValueInterface<bool>>();
         break;
     case 0x954F8FF8B3F40B36:
         // SetType<reverb>();
@@ -1819,10 +1818,10 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<LinkedBallTwistJointKey>();
         break;
     case 0x984C0D6D48F69A9D:
-        // SetType<DCArray<Vector2>>();
+        SetType<DCArray<Vector2>>();
         break;
     case 0x98A19836CF4CCB7D:
-        // SetType<D3DMesh>();
+        SetType<D3DMesh>();
         break;
     case 0x98A7496918F17715:
         // SetType<bankwavemap>();
@@ -1837,7 +1836,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnlightenModule::EnumeProbeResolution>();
         break;
     case 0x99D7C52EA7F0F97D:
-        // SetType<int>();
+        SetType<int>();
         break;
     case 0x9A3A4A9E63375381:
         // SetType<Font>();
@@ -1855,7 +1854,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Map<SoundFootsteps::EnumMaterial, SoundEventName<0>, less<SoundFootsteps::EnumMaterial>>>();
         break;
     case 0x9B52B73BB2BFE113:
-        // SetType<DCArray<T3MeshLOD>>();
+        SetType<DCArray<T3MeshLOD>>();
         break;
     case 0x9BAEBE80F400BAA8:
         // SetType<LocomotionDB>();
@@ -1864,10 +1863,10 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Ptr<PtrBase>>();
         break;
     case 0x9CEAD8A38E5C4258:
-        // SetType<T3MeshLocalTransformEntry>();
+        SetType<T3MeshLocalTransformEntry>();
         break;
     case 0x9CFA106A1AD61711:
-        // SetType<DCArray<T3MaterialTexture>>();
+        SetType<DCArray<T3MaterialTexture>>();
         break;
     case 0x9D25F5E686CCDF56:
         // SetType<SingleValue<Handle<D3DMesh>>>();
@@ -1885,7 +1884,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<KeyframedValue<LocationInfo>::Sample>>();
         break;
     case 0x9EB1467F36B078EB:
-        // SetType<Map<Symbol, Map<Symbol, Set<Symbol, less<Symbol>>, less<Symbol>>, less<Symbol>>>();
+        SetType<Map<Symbol, Map<Symbol, Set<Symbol, std::less<Symbol>>, std::less<Symbol>>, std::less<Symbol>>>();
         break;
     case 0x9EE5E31EF2F71F0E:
         // SetType<Handle<Scene>>();
@@ -1933,16 +1932,16 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<Handle<Scene>>>();
         break;
     case 0xA1B5E14F4AF83C27:
-        // SetType<T3GFXBuffer>();
+        SetType<T3GFXBuffer>();
         break;
     case 0xA2048C57716AD85F:
-        // SetType<DCArray<T3Texture>>();
+        SetType<DCArray<T3Texture>>();
         break;
     case 0xA2435650D27ACF90:
         // SetType<EnlightenModule::EnumeSceneOptimisationMode>();
         break;
     case 0xA33B55750C7BF243:
-        // SetType<Map<int, int, less<int>>>();
+        SetType<Map<int, int, std::less<int>>>();
         break;
     case 0xA34E655ED1345F8B:
         // SetType<WalkAnimator>();
@@ -1957,7 +1956,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<ResourceBundle::ResourceInfo>>();
         break;
     case 0xA406267E2A2F22D9:
-        // SetType<T3MeshBoneEntry>();
+        SetType<T3MeshBoneEntry>();
         break;
     case 0xA47918A7D3C3A67A:
         // SetType<Handle<PhysicsObject>>();
@@ -1978,7 +1977,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<AnimOrChore>();
         break;
     case 0xA5D09E10B6CE1CC4:
-        // SetType<DCArray<unsignedchar>>();
+        SetType<DCArray<unsigned char>>();
         break;
     case 0xA62FE74CCFA3467C:
         // SetType<EnlightenModule::EnumeDistributedBuildSystem>();
@@ -1990,13 +1989,13 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DlgFolder>();
         break;
     case 0xA7353268AC8AAD1F:
-        // SetType<DCArray<T3MaterialCompiledData>>();
+        SetType<DCArray<T3MaterialCompiledData>>();
         break;
     case 0xA7A8C91070E4C52E:
         // SetType<DCArray<ParticleSprite::Animation>>();
         break;
     case 0xA7DAAA296D1491CC:
-        // SetType<DCArray<T3MeshTexture>>();
+        SetType<DCArray<T3MeshTexture>>();
         break;
     case 0xA7FE20E35345AC33:
         // SetType<DlgLine>();
@@ -2011,7 +2010,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<Ptr<ActingAccentPalette>>>();
         break;
     case 0xA8F90B07ADEFAB41:
-        // SetType<short>();
+        SetType<short>();
         break;
     case 0xA96424E7FCCBF8EB:
         // SetType<EnumT3LightEnvBakeOnStatic>();
@@ -2062,7 +2061,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<LocalizationRegistry>();
         break;
     case 0xAFB5DB7305E23480:
-        // SetType<int8>();
+        SetType<int8>();
         break;
     case 0xB02BC4AD45C96F0E:
         // SetType<FootSteps>();
@@ -2071,7 +2070,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<CorrespondencePoint>>();
         break;
     case 0xB03A4E300519F2C1:
-        // SetType<__int64>();
+        SetType<__int64>();
         break;
     case 0xB056BCD869E07B38:
         // SetType<DCArray<KeyframedValue<Handle<SoundEventData>>::Sample>>();
@@ -2095,7 +2094,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<PivotJointKey>();
         break;
     case 0xB4292F0DA0DEA9EB:
-        // SetType<Map<unsignedint, Set<Symbol, less<Symbol>>, less<unsignedint>>>();
+        SetType<Map<unsigned int, Set<Symbol, std::less<Symbol>>, std::less<unsigned int>>>();
         break;
     case 0xB45FAE180770628C:
         // SetType<EnlightenModule>();
@@ -2131,10 +2130,10 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<PathSegment>();
         break;
     case 0xB76E07D6BB899BFE:
-        // SetType<Vector4>();
+        SetType<Vector4>();
         break;
     case 0xB76E52C699301BDA:
-        // SetType<DCArray<T3MaterialTextureParam>>();
+        SetType<DCArray<T3MaterialTextureParam>>();
         break;
     case 0xB876B4CEF80F1EDB:
         // SetType<DCArray<ActingPaletteClass>>();
@@ -2161,7 +2160,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         SetType<float>();
         break;
     case 0xBAF342C1FC31C370:
-        // SetType<T3GFXVertexState>();
+        SetType<T3GFXVertexState>();
         break;
     case 0xBB01AD6EFE5EE662:
         // SetType<List<T3ToonGradientRegion>>();
@@ -2191,7 +2190,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<AnimationManager>();
         break;
     case 0xBC62744AC9114C72:
-        // SetType<Set<int, less<int>>>();
+        SetType<Set<int, std::less<int>>>();
         break;
     case 0xBC6B9F28CC33A947:
         // SetType<Procedural_LookAt>();
@@ -2200,7 +2199,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<LightGroupInstance>>();
         break;
     case 0xBD4C9F5B0EC743C2:
-        // SetType<Map<String, Vector3, less<String>>>();
+        SetType<Map<String, Vector3, std::less<String>>>();
         break;
     case 0xBDB2F6DC0135CA3E:
         // SetType<InverseKinematicsAttach>();
@@ -2236,7 +2235,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Map<unsignedint, LanguageRes, less<unsignedint>>>();
         break;
     case 0xBFD68E6E1C629E01:
-        // SetType<T3MaterialRuntimeProperty>();
+        SetType<T3MaterialRuntimeProperty>();
         break;
     case 0xC04ED0CBAF7D9C90:
         // SetType<EnumGlowQualityLevel>();
@@ -2254,7 +2253,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<CompressedKeys<bool>>();
         break;
     case 0xC16762F7763D62AB:
-        // SetType<Color>();
+        SetType<Color>();
         break;
     case 0xC1E4AC327DAD6D1C:
         // SetType<bgh>();
@@ -2290,7 +2289,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<SingleValue<Handle<SoundReverbDefinition>>>();
         break;
     case 0xC561A117A7710B6A:
-        // SetType<T3MaterialPreShader>();
+        SetType<T3MaterialPreShader>();
         break;
     case 0xC5C3044FA9C1D61F:
         // SetType<CompressedKeys<Handle<SoundEventData>>>();
@@ -2299,7 +2298,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<AnimatedValueInterface<Handle<PhonemeTable>>>();
         break;
     case 0xC6136FB4A18BBE93:
-        // SetType<BitSetBase<5>>();
+        SetType<BitSetBase<5>>();
         break;
     case 0xC61768F8C7376559:
         // SetType<Handle<SoundBusSnapshot::Snapshot>>();
@@ -2314,7 +2313,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<CompressedKeys<LocationInfo>>();
         break;
     case 0xC810FA560D267D67:
-        // SetType<Map<Symbol, PropertySet, less<Symbol>>>();
+        SetType<Map<Symbol, PropertySet, std::less<Symbol>>>();
         break;
     case 0xC8564FB0D1D68883:
         // SetType<InverseKinematicsBase>();
@@ -2329,7 +2328,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnumTextOrientationType>();
         break;
     case 0xC995828AC3B803F2:
-        // SetType<DCArray<Skeleton::Entry>>();
+        SetType<DCArray<Skeleton::Entry>>();
         break;
     case 0xC9CA51C8795945F0:
         // SetType<DCArray<WalkBoxes::Vert>>();
@@ -2341,13 +2340,13 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<bgm>();
         break;
     case 0xCA874E09192E2598:
-        // SetType<AnimatedValueInterface<Color>>();
+        SetType<AnimatedValueInterface<Color>>();
         break;
     case 0xCB029403B12D08D6:
-        // SetType<unsignedint>();
+        SetType<unsigned int>();
         break;
     case 0xCB17BA9E6EF9F5A9:
-        // SetType<AnimatedValueInterface<Vector3>>();
+        SetType<AnimatedValueInterface<Vector3>>();
         break;
     case 0xCB31FAC32D7FAD8D:
         // SetType<eyes>();
@@ -2413,7 +2412,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<KeyframedValue<Handle<SoundAmbience::AmbienceDefinition>>>();
         break;
     case 0xCFD0EBF69D907EED:
-        // SetType<T3MaterialEnlightenPrecomputeParams>();
+        SetType<T3MaterialEnlightenPrecomputeParams>();
         break;
     case 0xD01D47E19594B3E9:
         // SetType<T3OverlayParams>();
@@ -2461,7 +2460,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<List<unsignedint>>();
         break;
     case 0xD48D0C3B810C1975:
-        // SetType<DCArray<PropertySet>>();
+        SetType<DCArray<PropertySet>>();
         break;
     case 0xD4B5597D859A03DE:
         // SetType<PreloadPackage::ResourceKey>();
@@ -2494,7 +2493,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         SetType<KeyframedValue<bool>>();
         break;
     case 0xD78BF3D477EC3DFB:
-        // SetType<Map<String, Set<String, less<String>>, less<String>>>();
+        SetType<Map<String, Set<String, std::less<String>>, std::less<String>>>();
         break;
     case 0xD7CE90BB8FFA4753:
         // SetType<EnumT3MaterialNormalSpaceType>();
@@ -2509,7 +2508,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<List<Handle<SoundData>>>();
         break;
     case 0xD8893CCA081E38A2:
-        // SetType<Map<Symbol, String, less<Symbol>>>();
+        SetType<Map<Symbol, String, std::less<Symbol>>>();
         break;
     case 0xD93FCCB03BC94F69:
         // SetType<ambience>();
@@ -2539,7 +2538,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnlightenModule::EnumeRadiositySampleRate>();
         break;
     case 0xDAE9DA89AF7C3612:
-        // SetType<BitSetBase<7>>();
+        SetType<BitSetBase<7>>();
         break;
     case 0xDBD3D5D932FEA4DA:
         // SetType<MovieCaptureInfo::EnumCompressorType>();
@@ -2557,7 +2556,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<snapshotsuite>();
         break;
     case 0xDDE3A9E749A30518:
-        // SetType<unsigned__int64>();
+        SetType<unsigned__int64>();
         break;
     case 0xDE877F4252845725:
         // SetType<probe>();
@@ -2569,7 +2568,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Handle<SoundData>>();
         break;
     case 0xDF302FFF123E7CAB:
-        // SetType<T3MaterialParameter>();
+        SetType<T3MaterialParameter>();
         break;
     case 0xDF30362E292BEF14:
         // SetType<CompressedKeys<Color>>();
@@ -2599,7 +2598,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<SingleValue<Symbol>>();
         break;
     case 0xE0F187F2BB24DD1F:
-        // SetType<T3MaterialTexture>();
+        SetType<T3MaterialTexture>();
         break;
     case 0xE0FDB8250AD3923D:
         // SetType<AnimatedValueInterface<String>>();
@@ -2620,7 +2619,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<T3LightProbeInternalData>();
         break;
     case 0xE2602DAF0134246D:
-        // SetType<DCArray<Transform>>();
+        SetType<DCArray<Transform>>();
         break;
     case 0xE26BBBA29EBA3E2A:
         // SetType<DlgChainHead>();
@@ -2629,7 +2628,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<KeyframedValue<AnimOrChore>>();
         break;
     case 0xE2AF89E495F738E2:
-        // SetType<DCArray<DCArray<String>>>();
+        SetType<DCArray<DCArray<String>>>();
         break;
     case 0xE2BA743E952F9338:
         SetType<T3MaterialData>();
@@ -2641,7 +2640,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Map<String, SoundBusSystem::BusDescription, less<String>>>();
         break;
     case 0xE31CB0F3B2932710:
-        // SetType<BitSetBase<3>>();
+        SetType<BitSetBase<3>>();
         break;
     case 0xE340A108AD7DCEB1:
         // SetType<CompressedKeys<Handle<Scene>>>();
@@ -2716,7 +2715,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<Handle<AnimOrChore>>>();
         break;
     case 0xE9FA4A9E9D453359:
-        // SetType<Skeleton::Entry>();
+        SetType<Skeleton::Entry>();
         break;
     case 0xEA086C95C87CA185:
         // SetType<EnlightenModule::EnlightenPrimitiveSettings>();
@@ -2737,13 +2736,13 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Handle<PreloadPackage::RuntimeDataScene>>();
         break;
     case 0xEB906C78C340D4A6:
-        // SetType<SArray<Handle<T3Texture>, 1>>();
+        SetType<SArray<Handle<T3Texture>, 1>>();
         break;
     case 0xECB739634B43D072:
         // SetType<Map<Symbol, Map<Symbol, int, less<Symbol>>, less<Symbol>>>();
         break;
     case 0xEE3C7E2110139663:
-        // SetType<DCArray<DCArray<PropertySet>>>();
+        SetType<DCArray<DCArray<PropertySet>>>();
         break;
     case 0xEE3FD7CC7ED685E9:
         // SetType<DlgChoicesChildPre>();
@@ -2767,10 +2766,10 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Polar>();
         break;
     case 0xF0205400D4C83EBC:
-        // SetType<TRange<float>>();
+        SetType<TRange<float>>();
         break;
     case 0xF07C552824816DD1:
-        // SetType<char>();
+        SetType<char>();
         break;
     case 0xF07D50698E252C35:
         // SetType<ldb>();
@@ -2785,7 +2784,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<WalkBoxes::Quad>>();
         break;
     case 0xF297790770C35A97:
-        // SetType<Map<int, String, less<int>>>();
+        SetType<Map<int, String, std::less<int>>>();
         break;
     case 0xF2C0E4B485AF6F5B:
         // SetType<imap>();
@@ -2800,7 +2799,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Set<Ptr<PlaybackController>, less<Ptr<PlaybackController>>>>();
         break;
     case 0xF3E07C3D67895FD1:
-        // SetType<DCArray<T3MeshBatch>>();
+        SetType<DCArray<T3MeshBatch>>();
         break;
     case 0xF47250AB93E98778:
         // SetType<Rollover>();
@@ -2824,7 +2823,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<PlaceableBallTwistJointKey>();
         break;
     case 0xF61F7BA7EA84F63B:
-        // SetType<Map<String, Map<String, DCArray<String>, less<String>>, less<String>>>();
+        SetType<Map<String, Map<String, DCArray<String>, std::less<String>>, std::less<String>>>();
         break;
     case 0xF6792A98BDA977A7:
         // SetType<EnumLightCellBlendMode>();
@@ -2896,7 +2895,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<overlay>();
         break;
     case 0xFC96DFDEDE31FB4A:
-        // SetType<unsignedlong>();
+        SetType<unsigned long>();
         break;
     case 0xFCB10E2F8E89DB2B:
         // SetType<SoundBusSnapshot::Snapshot>();

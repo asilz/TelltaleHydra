@@ -202,7 +202,7 @@ class Animation // virtual
         return size;
     }
     Animation() : mValues(nullptr), mInterfaceFlags(nullptr), mInterfaceSymbols(nullptr) {}
-    ~Animation()
+    virtual ~Animation()
     {
         delete[] mValues;
         delete[] mInterfaceFlags;

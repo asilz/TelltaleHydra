@@ -1,24 +1,14 @@
 #include <tth/stream/stream.hpp>
 
+namespace TTH
+{
 namespace UID
 {
 class Generator
 {
   private:
-    inline virtual int32_t Read_(Stream &stream)
-    {
-        int32_t size = 0;
-        int32_t err;
-        size += stream.Read(&this->miNextUniqueID, sizeof(this->miNextUniqueID));
-        return size;
-    }
-    inline virtual int32_t Write_(Stream &stream) const
-    {
-        int32_t size = 0;
-        int32_t err;
-        size += stream.Write(&this->miNextUniqueID, sizeof(this->miNextUniqueID));
-        return size;
-    }
+    inline virtual int32_t Read_(Stream &stream) { return stream.Read(&this->miNextUniqueID, sizeof(this->miNextUniqueID)); }
+    inline virtual int32_t Write_(Stream &stream) const { return stream.Write(&this->miNextUniqueID, sizeof(this->miNextUniqueID)); }
 
   public:
     virtual int32_t Read(Stream &stream)
@@ -28,7 +18,7 @@ class Generator
         {
             return err;
         }
-        return Read_(stream) + 4;
+        return Generator::Read_(stream) + 4;
     }
     virtual int32_t Read(Stream &stream, bool blocked)
     {
@@ -39,15 +29,15 @@ class Generator
             {
                 return err;
             };
-            return Read_(stream) + 4;
+            return Generator::Read_(stream) + 4;
         }
-        return Read_(stream);
+        return Generator::Read_(stream);
     }
     virtual int32_t Write(Stream &stream) const
     {
         int32_t size = 0;
         size += stream.Write(&size, sizeof(size));
-        size += Write_(stream);
+        size += Generator::Write_(stream);
         int32_t err = stream.Seek(-size, stream.CUR);
         if (err < 0)
         {
@@ -68,7 +58,7 @@ class Generator
         {
             size += stream.Write(&size, sizeof(size));
         }
-        size += Write_(stream);
+        size += Generator::Write_(stream);
         if (blocked)
         {
             int32_t err = stream.Seek(-size, stream.CUR);
@@ -85,26 +75,16 @@ class Generator
         }
         return size;
     }
+    virtual ~Generator() {}
+
     int32_t miNextUniqueID;
     static constexpr bool IS_BLOCKED = true;
 };
 class Owner
 {
   private:
-    inline virtual int32_t Read_(Stream &stream)
-    {
-        int32_t size = 0;
-        int32_t err;
-        size += stream.Read(&this->miUniqueID, sizeof(this->miUniqueID));
-        return size;
-    }
-    inline virtual int32_t Write_(Stream &stream) const
-    {
-        int32_t size = 0;
-        int32_t err;
-        size += stream.Write(&this->miUniqueID, sizeof(this->miUniqueID));
-        return size;
-    }
+    inline virtual int32_t Read_(Stream &stream) { return stream.Read(&this->miUniqueID, sizeof(this->miUniqueID)); }
+    inline virtual int32_t Write_(Stream &stream) const { return stream.Write(&this->miUniqueID, sizeof(this->miUniqueID)); }
 
   public:
     virtual int32_t Read(Stream &stream)
@@ -114,7 +94,7 @@ class Owner
         {
             return err;
         }
-        return Read_(stream) + 4;
+        return Owner::Read_(stream) + 4;
     }
     virtual int32_t Read(Stream &stream, bool blocked)
     {
@@ -125,15 +105,15 @@ class Owner
             {
                 return err;
             };
-            return Read_(stream) + 4;
+            return Owner::Read_(stream) + 4;
         }
-        return Read_(stream);
+        return Owner::Read_(stream);
     }
     virtual int32_t Write(Stream &stream) const
     {
         int32_t size = 0;
         size += stream.Write(&size, sizeof(size));
-        size += Write_(stream);
+        size += Owner::Write_(stream);
         int32_t err = stream.Seek(-size, stream.CUR);
         if (err < 0)
         {
@@ -154,7 +134,7 @@ class Owner
         {
             size += stream.Write(&size, sizeof(size));
         }
-        size += Write_(stream);
+        size += Owner::Write_(stream);
         if (blocked)
         {
             int32_t err = stream.Seek(-size, stream.CUR);
@@ -171,7 +151,10 @@ class Owner
         }
         return size;
     }
+    virtual ~Owner() {}
+
     int32_t miUniqueID;
     static constexpr bool IS_BLOCKED = true;
 };
-};
+}; // namespace UID
+}; // namespace TTH

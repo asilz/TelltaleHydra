@@ -437,8 +437,6 @@ errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scen
             assert(d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_U8x4);
 
             blendIndices = d3dmeshData;
-            ptrdiff_t offset = d3dmeshData - d3dmesh.async;
-            assert(offset == 0x2592c);
             // blendIndicesAttribute = &d3dmesh.mMeshData.mVertexStates[0].mAttributes[index];
             blendIndicesBuffer = &d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index];
             d3dmeshData += d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mStride * d3dmesh.mMeshData.mVertexStates[0].mpVertexBuffer[index].mCount;
