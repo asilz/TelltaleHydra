@@ -499,7 +499,7 @@ errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scen
 
 static void LogCallback(const char *msg, char *userData) { TTH_LOG_INFO("%s\n", msg); }
 
-errno_t ExportAsset(const Skeleton &skeleton, const Animation &animation, const D3DMesh &mesh)
+errno_t ExportAsset(char *resultPath, const Skeleton &skeleton, const Animation &animation, const D3DMesh &mesh)
 {
     aiLogStream stream;
     stream.callback = LogCallback;
@@ -557,7 +557,7 @@ errno_t ExportAsset(const Skeleton &skeleton, const Animation &animation, const 
 
     Assimp::Exporter exporter;
 
-    err = exporter.Export(&scene, "glb2", "assimpTWD.glb", aiProcess_ValidateDataStructure);
+    err = exporter.Export(&scene, "glb2", resultPath, aiProcess_ValidateDataStructure);
     if (err)
     {
         TTH_LOG_ERROR("%s\n", exporter.GetErrorString());
