@@ -17,6 +17,8 @@
 #include <tth/meta/t3texture/swizzle.hpp>
 #include <tth/meta/t3texture/t3texture.hpp>
 #include <tth/meta/uid/uid.hpp>
+#include <type_traits>
+#include <utility>
 
 namespace TTH
 {
@@ -31,8 +33,12 @@ typedef uint32_t uint32;
 typedef uint16_t uint16;
 typedef uint8_t uint8;
 
+#ifndef unsigned__int64
 typedef uint64_t unsigned__int64;
+#endif
+#ifndef __int64
 typedef int64_t __int64;
+#endif
 
 Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(nullptr), write_(nullptr), typeName_(nullptr)
 {
