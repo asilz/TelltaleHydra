@@ -124,9 +124,9 @@ errno_t ConvertAnimation(const Animation &animation, aiAnimation &assimpAnimatio
 {
     assimpAnimation.mName.length = snprintf(assimpAnimation.mName.data, sizeof(assimpAnimation.mName.data), "%016" PRIX64, animation.mName.mCrc64);
     assimpAnimation.mDuration = animation.mLength;
-    assimpAnimation.mTicksPerSecond = 1.0;
+    assimpAnimation.mTicksPerSecond = 0.1 / 4.0;
 
-    size_t maxFrameCount = 256; // Bad solution
+    size_t maxFrameCount = 256; // Bad solution. Perhaps there is way of knowing beforehand what the maximum number of frames.
 
     const CompressedSkeletonPoseKeys2 *cspk = nullptr;
     for (int32_t i = 0; i < animation.mInterfaceCount && cspk == nullptr; ++i)
@@ -296,7 +296,7 @@ errno_t ConvertAnimation(const Animation &animation, aiAnimation &assimpAnimatio
     return 0;
 }
 
-errno_t GetGlobalMatrix(aiMatrix4x4 &result, const aiNode &node)
+static errno_t GetGlobalMatrix(aiMatrix4x4 &result, const aiNode &node)
 {
     if (node.mParent != nullptr)
     {
@@ -308,7 +308,7 @@ errno_t GetGlobalMatrix(aiMatrix4x4 &result, const aiNode &node)
     return 0;
 }
 
-#define TRIANGLE_INDEX_COUNT 3
+#define TRIANGLE_INDEX_COUNT 3 // A triangle has three corners.
 
 errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scene)
 {
@@ -477,6 +477,12 @@ errno_t ConvertD3DMesh(const D3DMesh &d3dmesh, aiMesh &mesh, const aiScene &scen
             GetGlobalMatrix(mesh.mBones[i]->mOffsetMatrix, *mesh.mBones[i]->mNode);
             aiMatrix4Inverse(&mesh.mBones[i]->mOffsetMatrix);
 
+            /* Due to inaccuracy in matrix functions, we need to set the matrix values to an accurate value */
+            mesh.mBones[i]->mOffsetMatrix.d1 = 0.0f;
+            mesh.mBones[i]->mOffsetMatrix.d2 = 0.0f;
+            mesh.mBones[i]->mOffsetMatrix.d3 = 0.0f;
+            mesh.mBones[i]->mOffsetMatrix.d4 = 1.0f;
+
             mesh.mBones[i]->mNumWeights = vectors[i].size();
             mesh.mBones[i]->mWeights = new aiVertexWeight[mesh.mBones[i]->mNumWeights];
             for (unsigned int j = 0; j < mesh.mBones[i]->mNumWeights; ++j)
@@ -524,25 +530,35 @@ errno_t ExportAsset(const char *resultPath, const Skeleton &skeleton, const Anim
 
         for (unsigned int j = 0; j < scene.mAnimations[i]->mNumChannels; ++j) // TODO: Find a better way
         {
+            scene.mAnimations[i]->mChannels[j]->mNumScalingKeys = scene.mAnimations[i]->mChannels[j]->mNumPositionKeys;
+            scene.mAnimations[i]->mChannels[j]->mScalingKeys = new aiVectorKey[scene.mAnimations[i]->mChannels[j]->mNumScalingKeys];
             for (unsigned int k = 0; k < scene.mAnimations[i]->mChannels[j]->mNumPositionKeys; ++k)
             {
                 aiQuaternion quat;
                 aiVector3D vec;
                 scene.mRootNode->FindNode(scene.mAnimations[i]->mChannels[j]->mNodeName)->mTransformation.DecomposeNoScaling(quat, vec);
                 scene.mAnimations[i]->mChannels[j]->mPositionKeys[k].mValue *= vec.Length();
+
+                scene.mAnimations[i]->mChannels[j]->mScalingKeys[k] = aiVectorKey(scene.mAnimations[i]->mChannels[j]->mPositionKeys[k].mTime, aiVector3D(1.0f));
             }
         }
     }
 
     scene.mNumMeshes = meshCount;
     scene.mMeshes = new aiMesh *[meshCount];
-    scene.mRootNode->mChildren[0]->mMeshes = new unsigned int[scene.mNumMeshes];
-    scene.mRootNode->mChildren[0]->mNumMeshes = scene.mNumMeshes;
+    scene.mRootNode->mMeshes = new unsigned int[scene.mNumMeshes];
+    scene.mRootNode->mNumMeshes = scene.mNumMeshes;
+
+    scene.mNumMaterials = 1;
+    scene.mMaterials = new aiMaterial *[1];
+    scene.mMaterials[0] = new aiMaterial();
+
     for (unsigned int i = 0; i < scene.mNumMeshes; ++i)
     {
         scene.mMeshes[i] = new aiMesh();
+        scene.mMeshes[i]->mMaterialIndex = 0;
 
-        scene.mRootNode->mChildren[0]->mMeshes[i] = i;
+        scene.mRootNode->mMeshes[i] = i;
 
         err = ConvertD3DMesh(meshes[i], *scene.mMeshes[i], scene);
         if (err)
@@ -553,10 +569,10 @@ errno_t ExportAsset(const char *resultPath, const Skeleton &skeleton, const Anim
 
     Assimp::Exporter exporter;
 
-    err = exporter.Export(&scene, "glb2", resultPath, aiProcess_ValidateDataStructure);
+    err = exporter.Export(&scene, "fbx", resultPath, aiProcess_ValidateDataStructure | aiProcess_LimitBoneWeights);
     if (err)
     {
-        TTH_LOG_ERROR("%s\n", exporter.GetErrorString());
+        TTH_LOG_ERROR("Error: %s\n", exporter.GetErrorString());
         return err;
     }
 
