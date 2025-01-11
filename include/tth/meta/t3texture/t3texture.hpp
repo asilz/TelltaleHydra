@@ -323,35 +323,6 @@ class T3Texture
         }
         return size;
     }
-    int32_t mVersion;
-    class T3SamplerStateBlock mSamplerState;
-    struct EnumPlatformType mPlatform;
-    class String mName;
-    class String mImportName;
-    float mImportScale;
-    class ToolProps mToolProps;
-    uint32_t mNumMipLevels;
-    uint32_t mWidth;
-    uint32_t mHeight;
-    uint32_t mDepth;
-    uint32_t mArraySize;
-    int32_t mSurfaceFormat;
-    int32_t mTextureLayout;
-    int32_t mSurfaceGamma;
-    int32_t mSurfaceMultisample;
-    int32_t mResourceUsage;
-    int32_t mType;
-    struct RenderSwizzleParams mSwizzle;
-    float mSpecularGlossExponent;
-    float mHDRLightmapScale;
-    float mToonGradientCutoff;
-    int32_t mAlphaMode;
-    int32_t mColorMode;
-    class Vector2 mUVOffset;
-    class Vector2 mUVScale;
-    class DCArray<class Symbol> mArrayFrameNames;
-    class DCArray<class T3ToonGradientRegion> mToonRegions;
-    static constexpr bool IS_BLOCKED = true;
 
     struct RegionStreamHeader
     {
@@ -538,6 +509,37 @@ class T3Texture
         int32_t mTotalDataSize;
         static constexpr bool IS_BLOCKED = true;
     };
+
+    int32_t mVersion;
+    class T3SamplerStateBlock mSamplerState;
+    struct EnumPlatformType mPlatform;
+    class String mName;
+    class String mImportName;
+    float mImportScale;
+    class ToolProps mToolProps;
+    uint32_t mNumMipLevels;
+    uint32_t mWidth;
+    uint32_t mHeight;
+    uint32_t mDepth;
+    uint32_t mArraySize;
+    int32_t mSurfaceFormat;
+    int32_t mTextureLayout;
+    int32_t mSurfaceGamma;
+    int32_t mSurfaceMultisample;
+    int32_t mResourceUsage;
+    int32_t mType;
+    struct RenderSwizzleParams mSwizzle;
+    float mSpecularGlossExponent;
+    float mHDRLightmapScale;
+    float mToonGradientCutoff;
+    int32_t mAlphaMode;
+    int32_t mColorMode;
+    class Vector2 mUVOffset;
+    class Vector2 mUVScale;
+    class DCArray<class Symbol> mArrayFrameNames;
+    class DCArray<class T3ToonGradientRegion> mToonRegions;
+
+    static constexpr bool IS_BLOCKED = true;
 };
 
 } // namespace TTH

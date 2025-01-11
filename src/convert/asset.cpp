@@ -124,9 +124,9 @@ errno_t ConvertAnimation(const Animation &animation, aiAnimation &assimpAnimatio
 {
     assimpAnimation.mName.length = snprintf(assimpAnimation.mName.data, sizeof(assimpAnimation.mName.data), "%016" PRIX64, animation.mName.mCrc64);
     assimpAnimation.mDuration = animation.mLength;
-    assimpAnimation.mTicksPerSecond = 0.1 / 4.0;
+    assimpAnimation.mTicksPerSecond = 1.0;
 
-    size_t maxFrameCount = 256; // Bad solution. Perhaps there is way of knowing beforehand what the maximum number of frames.
+    size_t maxFrameCount = 512; // Bad solution. Perhaps there is way of knowing beforehand what the maximum number of frames.
 
     const CompressedSkeletonPoseKeys2 *cspk = nullptr;
     for (int32_t i = 0; i < animation.mInterfaceCount && cspk == nullptr; ++i)
@@ -569,7 +569,7 @@ errno_t ExportAsset(const char *resultPath, const Skeleton &skeleton, const Anim
 
     Assimp::Exporter exporter;
 
-    err = exporter.Export(&scene, "fbx", resultPath, aiProcess_ValidateDataStructure | aiProcess_LimitBoneWeights);
+    err = exporter.Export(&scene, "glb2", resultPath, aiProcess_ValidateDataStructure | aiProcess_LimitBoneWeights);
     if (err)
     {
         TTH_LOG_ERROR("Error: %s\n", exporter.GetErrorString());
