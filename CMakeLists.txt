@@ -6,7 +6,7 @@ set (CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-add_library(hydra)
+add_executable(hydra)
 add_subdirectory(src)
 add_subdirectory(extern)
 

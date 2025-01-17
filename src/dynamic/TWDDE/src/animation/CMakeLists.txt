@@ -1,0 +1,1 @@
+target_sources(twdde PRIVATE animation.cpp)

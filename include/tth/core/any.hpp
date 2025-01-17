@@ -1,7 +1,6 @@
 #pragma once
 
 #include <tth/core/utils.hpp>
-#include <tth/stream/object.hpp>
 #include <tth/stream/stream.hpp>
 #include <utility>
 

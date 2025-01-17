@@ -1,4 +1,5 @@
 add_subdirectory(stream)
-add_subdirectory(meta)
 add_subdirectory(core)
-add_subdirectory(convert)
+add_subdirectory(dynamic)
+add_subdirectory(linalg)
+target_sources(hydra PRIVATE main.cpp)

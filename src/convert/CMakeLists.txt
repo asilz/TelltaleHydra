@@ -1,1 +1,0 @@
-target_sources(hydra PRIVATE asset.cpp)
