@@ -1,7 +1,6 @@
 #pragma once
 
 #include <tth/container/dcarray.hpp>
-#include <tth/core/util.hpp>
 #include <tth/crypto/crc64.hpp>
 #include <tth/flags.hpp>
 #include <tth/linalg/transform.hpp>
