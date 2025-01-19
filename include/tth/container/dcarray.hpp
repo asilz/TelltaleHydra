@@ -17,7 +17,7 @@ template <class T> class DCArray : public std::vector<T>
         this->resize(count);
         for (auto &i : *this)
         {
-            size += stream.Read(i, false);
+            size += stream.Read<T>(i, false);
         }
 
         return size;
@@ -30,7 +30,7 @@ template <class T> class DCArray : public std::vector<T>
         int32_t size = stream.Write(count);
         for (auto const &i : *this)
         {
-            size += stream.Write(i, false);
+            size += stream.Write<T>(i, false);
         }
         return size;
     }

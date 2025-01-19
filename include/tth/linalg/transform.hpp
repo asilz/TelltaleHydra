@@ -14,6 +14,6 @@ class Transform
     int32_t Read(Stream &stream);
     int32_t Write(Stream &stream) const;
 
-    static constexpr bool IS_BLOCKED = 1;
+    static constexpr bool IS_BLOCKED = true;
 };
 }; // namespace TTH

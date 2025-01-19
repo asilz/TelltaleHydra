@@ -1,5 +1,6 @@
 
 
+#include <cassert>
 #include <math.h>
 #include <tth/animation/animation.hpp>
 #include <tth/flags.hpp>
@@ -26,12 +27,48 @@ class CompressedSkeletonPoseKeys2 : public AnimationValueInterfaceBase
     uint32_t mDataSize;
     uint8_t *mpData;
 
-    ~CompressedSkeletonPoseKeys2() {}
+    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("CompressedSkeletonPoseKeys2"); }
+
+    int32_t Read(Stream &stream)
+    {
+        if (mpData != nullptr)
+        {
+            delete[] mpData;
+        }
+
+        int32_t size = stream.Read(mDataSize);
+        mpData = new uint8_t[mDataSize];
+        size += stream.Read(static_cast<void *>(mpData), mDataSize);
+        return size;
+    }
+    int32_t Write(Stream &stream) const
+    {
+        int32_t size = stream.Write(mDataSize);
+        size += stream.Write(static_cast<const void *>(mpData), mDataSize);
+        return size;
+    }
+
+    static constexpr bool IS_BLOCKED = false;
+    CompressedSkeletonPoseKeys2() : mDataSize(0), mpData(nullptr) {}
+    ~CompressedSkeletonPoseKeys2()
+    {
+        if (mpData != nullptr)
+        {
+            delete[] mpData;
+        }
+    }
 };
 
 class Animation::Impl
 {
   private:
+    struct Value
+    {
+        uint64_t hash;
+        uint16_t valueCount;
+        uint16_t typeVersion;
+    };
+
     int32_t mVersion;
     Flags mFlags;
     Symbol mName;
@@ -39,21 +76,23 @@ class Animation::Impl
     float mAdditiveMask;
     uint8_t mToolProps;
     int32_t mInterfaceCount;
-    AnimationValueInterfaceBase *mValues;
+    AnimationValueInterfaceBase **mValues;
     Flags *mInterfaceFlags;
     Symbol *mInterfaceSymbols;
+
+    bool *interfaceBlocks; // Stupid dynamic polymorphism
 
   public:
     float GetDuration() const { return mLength; }
 
-    size_t GetKeyframeCount(Symbol boneCRC) const {}
+    size_t GetKeyframeCount(Symbol boneCRC) const { return 0; }
 
     size_t GetBoneCount() const
     {
         const CompressedSkeletonPoseKeys2 *cspk = nullptr;
         for (size_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
         {
-            cspk = dynamic_cast<const CompressedSkeletonPoseKeys2 *>(mValues + i);
+            cspk = dynamic_cast<const CompressedSkeletonPoseKeys2 *>(mValues[i]);
         }
         if (cspk == nullptr)
         {
@@ -67,21 +106,22 @@ class Animation::Impl
         CompressedSkeletonPoseKeys2 *cspk = nullptr;
         for (size_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
         {
-            cspk = dynamic_cast<CompressedSkeletonPoseKeys2 *>(mValues + i);
+            cspk = dynamic_cast<CompressedSkeletonPoseKeys2 *>(mValues[i]);
         }
         if (cspk == nullptr)
         {
             return nullptr;
         }
-        return reinterpret_cast<const Symbol *>(cspk->mpData + (reinterpret_cast<const CompressedSkeletonPoseKeys2::Header *>(cspk->mpData))->mSampleDataSize);
+        return reinterpret_cast<const Symbol *>(cspk->mpData + sizeof(CompressedSkeletonPoseKeys2::Header) + sizeof(int64_t) +
+                                                (reinterpret_cast<const CompressedSkeletonPoseKeys2::Header *>(cspk->mpData))->mSampleDataSize);
     };
 
-    errno_t GetKeyframes(KeyframedValue<Transform> *output) const
+    errno_t GetKeyframes(KeyframedValue<Vector3> *translations, KeyframedValue<Quaternion> *rotations) const
     {
         CompressedSkeletonPoseKeys2 *cspk = nullptr;
         for (size_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
         {
-            cspk = dynamic_cast<CompressedSkeletonPoseKeys2 *>(mValues + i);
+            cspk = dynamic_cast<CompressedSkeletonPoseKeys2 *>(mValues[i]);
         }
         if (cspk == nullptr)
         {
@@ -117,8 +157,6 @@ class Animation::Impl
         {
             if ((*headerData & 0x40000000) == 0) // Vector
             {
-                output[(*headerData >> 0x10) & 0xfff].mSamples.emplace_back(KeyframedValue<Transform>::Sample{(float)(*headerData & 0xffff) * 1.525902e-05 * header.mRangeTime, false, 0,
-                                                                                                              Transform{Quaternion{0.0f, 0.0f, 0.0f, 1.0f}, Vector3{0.0f, 0.0f, 0.0f}}});
                 if ((int32_t)*headerData < 0)
                 {
                     if (stagedDelV > 3)
@@ -132,24 +170,14 @@ class Animation::Impl
                         cspkBuf += 4 * sizeof(uint32_t);
                         stagedDelV = 0;
                     }
-
-                    if (output[(*headerData >> 0x10) & 0xfff].mSamples[output[(*headerData >> 0x10) & 0xfff].mSamples.size() - 1].mTime ==
-                        (float)(*headerData & 0xffff) * 1.525902e-05 * header.mRangeTime)
+                    if (translations[(*headerData >> 0x10) & 0xfff].mSamples.size() > 0)
                     {
-                        if (output[(*headerData >> 0x10) & 0xfff].mSamples.size() > 0)
-                        {
-                            Vector3 *previous = &output[(*headerData >> 0x10) & 0xfff].mSamples[output[(*headerData >> 0x10) & 0xfff].mSamples.size() - 2].mValue.mTrans;
-
-                            delV[stagedDelV].x += previous->x;
-                            delV[stagedDelV].y += previous->y;
-                            delV[stagedDelV].z += previous->z;
-                        }
-                        output[(*headerData >> 0x10) & 0xfff].mSamples[output[(*headerData >> 0x10) & 0xfff].mSamples.size() - 1].mValue.mTrans = delV[stagedDelV];
+                        Vector3 *previous = &translations[(*headerData >> 0x10) & 0xfff].mSamples[translations[(*headerData >> 0x10) & 0xfff].mSamples.size() - 1].mValue;
+                        delV[stagedDelV].x += previous->x;
+                        delV[stagedDelV].y += previous->y;
+                        delV[stagedDelV].z += previous->z;
                     }
-
-                    if (output[(*headerData >> 0x10) & 0xfff].mSamples.size())
-                        assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mPositionKeys[assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumPositionKeys - 1].mValue =
-                            delV[stagedDelV];
+                    translations[(*headerData >> 0x10) & 0xfff].mSamples.emplace_back((float)(*headerData & 0xffff) * 1.525902e-05f * header.mRangeTime, false, 0, delV[stagedDelV]);
                     ++stagedDelV;
                 }
                 else
@@ -165,15 +193,12 @@ class Animation::Impl
                         cspkBuf += 8 * sizeof(uint32_t);
                         stagedAbsV = 0;
                     }
-                    assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mPositionKeys[assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumPositionKeys - 1].mValue = absV[stagedAbsV];
+                    translations[(*headerData >> 0x10) & 0xfff].mSamples.emplace_back((float)(*headerData & 0xffff) * 1.525902e-05f * header.mRangeTime, false, 0, absV[stagedAbsV]);
                     ++stagedAbsV;
                 }
             }
             else // Quaternion
             {
-                assert(assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys <= maxFrameCount);
-                assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mRotationKeys[++assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys - 1].mTime =
-                    (float)(*headerData & 0xffff) * 1.525902e-05 * header.mRangeTime;
                 if ((int32_t)*headerData < 0)
                 {
                     if (stagedDelQ > 3)
@@ -197,13 +222,11 @@ class Animation::Impl
                         cspkBuf += 4 * sizeof(uint32_t);
                         stagedDelQ = 0;
                     }
-                    if (assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys > 1)
+                    if (rotations[(*headerData >> 0x10) & 0xfff].mSamples.size() > 0)
                     {
-                        aiQuaternionMultiply(
-                            delQ + stagedDelQ,
-                            &assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mRotationKeys[assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys - 2].mValue);
+                        delQ[stagedDelQ] = delQ[stagedDelQ] * rotations[(*headerData >> 0x10) & 0xfff].mSamples[rotations[(*headerData >> 0x10) & 0xfff].mSamples.size() - 1].mValue;
                     }
-                    assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mRotationKeys[assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys - 1].mValue = delQ[stagedDelQ];
+                    rotations[(*headerData >> 0x10) & 0xfff].mSamples.emplace_back((float)(*headerData & 0xffff) * 1.525902e-05f * header.mRangeTime, false, 0, delQ[stagedDelQ]);
                     ++stagedDelQ;
                 }
                 else
@@ -229,32 +252,201 @@ class Animation::Impl
                         stagedAbsQ = 0;
                     }
                     uint32_t axisOrder = *headerData >> 0x1c & 3;
-                    assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mRotationKeys[assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys - 1].mValue.x =
-                        *(((float *)absQ + (axisOrder ^ 1)) + 4 * stagedAbsQ);
-                    assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mRotationKeys[assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys - 1].mValue.y =
-                        *(((float *)absQ + (axisOrder ^ 2)) + 4 * stagedAbsQ);
-                    assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mRotationKeys[assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys - 1].mValue.z =
-                        *(((float *)absQ + (axisOrder ^ 3)) + 4 * stagedAbsQ);
-                    assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mRotationKeys[assimpAnimation.mChannels[(*headerData >> 0x10) & 0xfff]->mNumRotationKeys - 1].mValue.w =
-                        *(((float *)absQ + (axisOrder)) + 4 * stagedAbsQ);
+                    rotations[(*headerData >> 0x10) & 0xfff].mSamples.emplace_back((float)(*headerData & 0xffff) * 1.525902e-05f * header.mRangeTime, false, 0,
+                                                                                   Quaternion{.x = *(((float *)absQ + (axisOrder)) + 4 * stagedAbsQ),
+                                                                                              .y = *(((float *)absQ + (axisOrder ^ 1)) + 4 * stagedAbsQ),
+                                                                                              .z = *(((float *)absQ + (axisOrder ^ 2)) + 4 * stagedAbsQ),
+                                                                                              .w = *(((float *)absQ + (axisOrder ^ 3)) + 4 * stagedAbsQ)});
+
                     ++stagedAbsQ;
                 }
             }
         }
+
+        return 0;
     };
 
     uint32_t GetVersionCRC32() const { return 0; };
 
+    int32_t Read(Stream &stream)
+    {
+        int32_t size = 0;
+        int32_t err = stream.Read(mVersion);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+        err = stream.Read(mFlags);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+        err = stream.Read(mName);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+        err = stream.Read(mLength);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        err = stream.Read(mAdditiveMask);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        err = stream.Read(mToolProps);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        err = stream.Seek(4, stream.CUR);
+        if (err < 0)
+        {
+            return err;
+        }
+
+        err = stream.Read(mInterfaceCount);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        int32_t dataBufferSize;
+        err = stream.Read(dataBufferSize);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        int32_t animValueTypes;
+        err = stream.Read(animValueTypes);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        Value animValue;
+        mValues = new AnimationValueInterfaceBase *[mInterfaceCount];
+        interfaceBlocks = new bool[mInterfaceCount];
+
+        size_t currentInterfaceIndex = 0;
+        for (int32_t i = 0; i < animValueTypes; ++i)
+        {
+            size += stream.Read(animValue.hash);
+            size += stream.Read(animValue.valueCount);
+            size += stream.Read(animValue.typeVersion);
+
+            switch (animValue.hash)
+            {
+            case CompressedSkeletonPoseKeys2::GetTypeCRC64():
+                while (animValue.valueCount--)
+                {
+                    interfaceBlocks[currentInterfaceIndex] = CompressedSkeletonPoseKeys2::IS_BLOCKED;
+                    mValues[currentInterfaceIndex++] = new CompressedSkeletonPoseKeys2;
+                }
+                break;
+            case KeyframedValue<Transform>::GetTypeCRC64():
+                while (animValue.valueCount--)
+                {
+                    interfaceBlocks[currentInterfaceIndex] = KeyframedValue<Transform>::IS_BLOCKED;
+                    mValues[currentInterfaceIndex++] = new KeyframedValue<Transform>;
+                }
+                break;
+            case KeyframedValue<float>::GetTypeCRC64():
+                while (animValue.valueCount--)
+                {
+                    interfaceBlocks[currentInterfaceIndex] = KeyframedValue<float>::IS_BLOCKED;
+                    mValues[currentInterfaceIndex++] = new KeyframedValue<float>;
+                }
+                break;
+            case KeyframedValue<bool>::GetTypeCRC64():
+                while (animValue.valueCount--)
+                {
+                    interfaceBlocks[currentInterfaceIndex] = KeyframedValue<bool>::IS_BLOCKED;
+                    mValues[currentInterfaceIndex++] = new KeyframedValue<bool>;
+                }
+                break;
+            default:
+                assert(0);
+                break;
+            }
+        }
+
+        for (int32_t i = 0; i < mInterfaceCount; ++i)
+        {
+            size += stream.Read(*(mValues[i]), interfaceBlocks[i]);
+        }
+
+        mInterfaceFlags = new Flags[mInterfaceCount];
+        for (int32_t i = 0; i < mInterfaceCount; ++i)
+        {
+            size += stream.Read(mInterfaceFlags[i]);
+        }
+
+        uint16_t isNotInterfaceSymbols;
+        size += stream.Read(isNotInterfaceSymbols);
+        if (isNotInterfaceSymbols)
+        {
+            mInterfaceSymbols = nullptr;
+        }
+        else
+        {
+            mInterfaceSymbols = new Symbol[mInterfaceCount];
+            for (int32_t i = 0; i < mInterfaceCount; ++i)
+            {
+                size += stream.Read(mInterfaceSymbols[i]);
+            }
+        }
+
+        return size;
+    }
+    int32_t Write(Stream &stream) const { return 0; }
+
     Impl() : mVersion(-1), mFlags(0), mName(Symbol(0)), mLength(0.0f), mAdditiveMask(0.0f), mToolProps(0), mInterfaceCount(0), mValues(nullptr), mInterfaceFlags(nullptr), mInterfaceSymbols(nullptr) {}
+    ~Impl()
+    {
+        for (size_t i = 0; i < mInterfaceCount; ++i)
+        {
+            delete mValues[i];
+        }
+        delete[] mValues;
+        delete[] mInterfaceFlags;
+        delete[] mInterfaceSymbols;
+        delete[] interfaceBlocks;
+    }
 };
 
 float Animation::GetDuration() const { return impl->GetDuration(); }
 size_t Animation::GetKeyframeCount(Symbol boneCRC) const { return impl->GetKeyframeCount(boneCRC); }
 size_t Animation::GetBoneCount() const { return impl->GetBoneCount(); };
 const Symbol *Animation::GetBonesCRC64() const { return impl->GetBonesCRC64(); };
-errno_t Animation::GetKeyframes(KeyframedValue<Transform> *output) const { return impl->GetKeyframes(output); };
+errno_t Animation::GetKeyframes(KeyframedValue<Vector3> *translations, KeyframedValue<Quaternion> *rotations) const { return impl->GetKeyframes(translations, rotations); };
 uint32_t Animation::GetVersionCRC32() const { return 0; };
+int32_t Animation::Read(Stream &stream) { return impl->Read(stream); }
+int32_t Animation::Write(Stream &stream) const { return impl->Write(stream); }
 
-Animation::Animation() { impl = new Impl(); }
-Animation::~Animation() { delete impl; }
+errno_t Animation::Create()
+{
+    impl = new Impl();
+    return 0;
+}
+void Animation::Destroy()
+{
+    delete impl;
+    impl = nullptr;
+}
 }; // namespace TTH

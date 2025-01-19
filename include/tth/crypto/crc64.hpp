@@ -62,10 +62,14 @@ class Symbol
   public:
     uint64_t mCRC64;
 
-    Symbol(uint64_t crc64) { mCRC64 = crc64; }
+    Symbol(uint64_t crc64) : mCRC64(crc64) {}
+    Symbol() : mCRC64(0) {}
 
     int32_t Read(Stream &stream) { return stream.Read(mCRC64); }
     int32_t Write(Stream &stream) const { return stream.Write(mCRC64); }
+
+    bool operator<(const Symbol &rhs) const { return this->mCRC64 < rhs.mCRC64; }
+    bool operator>(const Symbol &rhs) const { return this->mCRC64 > rhs.mCRC64; }
 
     static constexpr bool IS_BLOCKED = false;
 };

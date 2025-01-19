@@ -19,10 +19,17 @@ class Skeleton
 
     const Vector3 *GetBoneLocalPosition(size_t boneIndex) const;
     const Quaternion *GetBoneLocalRotation(size_t boneIndex) const;
-    size_t GetBoneParentIndex(size_t boneIndex) const;
+    int32_t GetBoneParentIndex(size_t boneIndex) const;
     Symbol GetBoneCRC64(size_t boneIndex) const;
 
-        /**
+    /**
+     * @brief Retrieves the number of bones in the skeleton
+     *
+     * @return bone count
+     */
+    size_t GetBoneCount() const;
+
+    /**
      * @brief Retrieves the version CRC32 of the animation
      *
      * @return CRC32
@@ -38,7 +45,7 @@ class Skeleton
 
     static constexpr bool IS_BLOCKED = true;
 
-    Skeleton();
-    ~Skeleton();
+    errno_t Create();
+    void Destroy();
 };
 }; // namespace TTH

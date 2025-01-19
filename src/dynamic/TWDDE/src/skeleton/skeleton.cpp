@@ -59,6 +59,8 @@ class BoneContraints
         size += err;
         return size;
     }
+
+    static constexpr bool IS_BLOCKED = true;
 };
 
 class Skeleton::Impl
@@ -81,6 +83,190 @@ class Skeleton::Impl
         Map<class Symbol, float, struct std::less<class Symbol>> mResourceGroupMembership;
         BoneContraints mConstraints;
         Flags mFlags;
+
+        int32_t Read(Stream &stream)
+        {
+            int32_t size = 0;
+            int32_t err;
+            err = stream.Read(mJointName);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mParentName);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mParentIndex);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mMirrorBoneName);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mMirrorBoneIndex);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mLocalPos);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mLocalQuat);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mRestXform);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mGlobalTranslationScale);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mLocalTranslationScale);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mAnimTranslationScale);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mResourceGroupMembership);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mConstraints);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Read(mFlags);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            return size;
+        }
+
+        int32_t Write(Stream &stream) const
+        {
+            int32_t size = 0;
+            int32_t err;
+            err = stream.Write(mJointName);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mParentName);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mParentIndex);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mMirrorBoneName);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mMirrorBoneIndex);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mLocalPos);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mLocalQuat);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mRestXform);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mGlobalTranslationScale);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mLocalTranslationScale);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mAnimTranslationScale);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mResourceGroupMembership);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mConstraints);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mFlags);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            return size;
+        }
+
+        static constexpr bool IS_BLOCKED = true;
     };
 
     DCArray<Entry> mEntries;
@@ -110,15 +296,32 @@ class Skeleton::Impl
         }
         return nullptr;
     }
-    size_t GetBoneParentIndex(size_t boneIndex) const { return mEntries[boneIndex].mParentIndex; }
+    int32_t Read(Stream &stream) { return stream.Read(mEntries); }
+    int32_t Write(Stream &stream) const { return stream.Write(mEntries); }
+
+    int32_t GetBoneParentIndex(size_t boneIndex) const { return mEntries[boneIndex].mParentIndex; }
+
+    size_t GetBoneCount() const { return mEntries.size(); }
 };
 
 Symbol Skeleton::GetBoneCRC64(size_t boneIndex) const { return impl->GetBoneCRC64(boneIndex); }
 const Vector3 *Skeleton::GetBoneLocalPosition(size_t boneIndex) const { return impl->GetBoneLocalPosition(boneIndex); }
 const Quaternion *Skeleton::GetBoneLocalRotation(size_t boneIndex) const { return impl->GetBoneLocalRotation(boneIndex); }
-size_t Skeleton::GetBoneParentIndex(size_t boneIndex) const { return impl->GetBoneParentIndex(boneIndex); }
+int32_t Skeleton::GetBoneParentIndex(size_t boneIndex) const { return impl->GetBoneParentIndex(boneIndex); }
+size_t Skeleton::GetBoneCount() const { return impl->GetBoneCount(); }
 
-Skeleton::Skeleton() { impl = new Impl; }
-Skeleton::~Skeleton() { delete impl; }
+int32_t Skeleton::Read(Stream &stream) { return impl->Read(stream); }
+int32_t Skeleton::Write(Stream &stream) const { return impl->Write(stream); }
+
+errno_t Skeleton::Create()
+{
+    impl = new Impl;
+    return 0;
+}
+void Skeleton::Destroy()
+{
+    delete impl;
+    impl = nullptr;
+}
 
 }; // namespace TTH

@@ -43,20 +43,20 @@ class Animation
     size_t GetBoneCount() const;
 
     /**
-     * @brief Retrieves the CRC64 of all the bones in the animation and stores them in @p output
+     * @brief Retrieves the CRC64 of all the bones in the animation
      *
-     * @param output array with a capacity to store the crc64 of all the bones in the animation
-     * @return Bone count
+     * @return Pointer to bone symbols
      */
     const Symbol *GetBonesCRC64() const;
 
     /**
      * @brief Retrieves the keyframes of a specific bone
      *
-     * @param output array with size equal to the bone count that will be filled keyframes
+     * @param translation array with size equal to the bone count that will be filled keyframes
+     * @param rotations array with size equal to the bone count that will be filled keyframes
      * @return 0 on success, negative error code on failure
      */
-    errno_t GetKeyframes(KeyframedValue<Transform> *output) const;
+    errno_t GetKeyframes(KeyframedValue<Vector3> *translation, KeyframedValue<Quaternion> *rotations) const;
 
     /**
      * @brief Retrieves the version CRC32 of the animation
@@ -72,8 +72,8 @@ class Animation
      */
     constexpr uint64_t GetTypeCRC64() const { return CRC64_CaseInsensitive("Animation"); }
 
-    Animation();
-    ~Animation();
+    errno_t Create();
+    void Destroy();
 
     static constexpr bool IS_BLOCKED = true;
 };
