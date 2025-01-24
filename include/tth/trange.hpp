@@ -25,6 +25,7 @@ template <class T> class TRange
 
     T min;
     T max;
+
     static constexpr bool IS_BLOCKED = false;
 };
 

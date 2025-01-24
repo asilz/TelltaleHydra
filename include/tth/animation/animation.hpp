@@ -70,7 +70,7 @@ class Animation
      *
      * @return CRC64
      */
-    constexpr uint64_t GetTypeCRC64() const { return CRC64_CaseInsensitive("Animation"); }
+    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Animation"); }
 
     errno_t Create();
     void Destroy();

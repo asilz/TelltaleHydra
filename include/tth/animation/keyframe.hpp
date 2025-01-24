@@ -67,8 +67,8 @@ template <class T> class AnimatedValueInterface : public AnimationValueInterface
 
     virtual int32_t Read(Stream &stream)
     {
-        AnimationValueInterfaceBase *base = this;
-        return stream.Read(*base);
+        AnimationValueInterfaceBase *interface = this;
+        return stream.ReadBase(*interface);
     }
 
     virtual int32_t Write(Stream &stream) const
@@ -116,7 +116,7 @@ template <class T> class KeyframedValue : public AnimatedValueInterface<T>
     {
         int32_t size = 0;
         AnimatedValueInterface<T> *interface = this;
-        int32_t err = stream.Read(interface);
+        int32_t err = stream.ReadBase(*interface);
         if (err < 0)
         {
             return err;
@@ -180,7 +180,7 @@ template <class T> class KeyframedValue : public AnimatedValueInterface<T>
 
     KeyframedValue() : mSamples(0) {}
     static constexpr uint64_t GetTypeCRC64() { return 0; }
-    // static constexpr IS_BLOCKED = true;
+    static constexpr bool IS_BLOCKED = true;
 };
 
 template <> constexpr uint64_t KeyframedValue<Transform>::GetTypeCRC64() { return CRC64_CaseInsensitive("KeyframedValue<Transform>"); }

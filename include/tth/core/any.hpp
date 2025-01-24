@@ -1,6 +1,5 @@
 #pragma once
 
-#include <tth/core/utils.hpp>
 #include <tth/stream/stream.hpp>
 #include <utility>
 
@@ -12,8 +11,8 @@ class Any
   public:
     explicit Any(uint64_t hash);
 
-    template <class T> explicit Any(T &&obj) : obj_(new T{std::forward<T>(obj)}), dtor_(DtorAny<T>), copy_(CopyAny<T>), read_(ReadAny<T>), write_(WriteAny<T>), typeName_(::TTH::GetTypeName<T>()) {}
-    explicit Any() : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(nullptr), write_(nullptr), typeName_(nullptr) {}
+    template <class T> explicit Any(T &&obj) : obj_(new T{std::forward<T>(obj)}), dtor_(DtorAny<T>), copy_(CopyAny<T>), read_(ReadAny<T>), write_(WriteAny<T>) {}
+    explicit Any() : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(nullptr), write_(nullptr) {}
 
     ~Any()
     {
@@ -25,7 +24,7 @@ class Any
         }
     }
 
-    Any(const Any &other) : obj_(other.copy_(other.obj_)), dtor_(other.dtor_), copy_(other.copy_), read_(other.read_), write_(other.write_), typeName_(other.typeName_) {}
+    Any(const Any &other) : obj_(other.copy_(other.obj_)), dtor_(other.dtor_), copy_(other.copy_), read_(other.read_), write_(other.write_) {}
     Any &operator=(Any &&other) noexcept
     {
         if (this != &other)
@@ -39,7 +38,6 @@ class Any
             copy_ = other.copy_;
             read_ = other.read_;
             write_ = other.write_;
-            typeName_ = other.typeName_;
             other.obj_ = nullptr;
             other.dtor_ = nullptr;
         }
@@ -54,7 +52,6 @@ class Any
         read_ = ReadAny<T>;
         write_ = WriteAny<T>;
         copy_ = CopyAny<T>;
-        typeName_ = ::TTH::GetTypeName<T>();
     }
     template <class T> T *GetTypePtr()
     {
@@ -70,21 +67,18 @@ class Any
     uint32_t Read(Stream &stream) { return read_(stream, obj_); }
     uint32_t Write(Stream &stream) const { return write_(stream, obj_); }
 
-    const char *GetTypeName() { return typeName_; }
-
   private:
     template <class T> static void DtorAny(void *obj) { delete static_cast<T *>(obj); }
     template <class T> static void *CopyAny(void *obj) { return new T{*static_cast<T *>(obj)}; }
 
-    template <class T> static uint32_t ReadAny(Stream &stream, void *obj) { return ReadObject<T>(*static_cast<T *>(obj), stream, false); }
-    template <class T> static uint32_t WriteAny(Stream &stream, const void *obj) { return WriteObject<T>(*static_cast<const T *>(obj), stream, false); }
+    template <class T> static int32_t ReadAny(Stream &stream, void *obj) { return stream.Read<T>(*static_cast<const T *>(obj, false)); }
+    template <class T> static int32_t WriteAny(Stream &stream, const void *obj) { return stream.Write<T>(*static_cast<const T *>(obj, false)); }
 
     void *obj_;
     void (*dtor_)(void *);
     void *(*copy_)(void *);
-    uint32_t (*read_)(Stream &, void *);
-    uint32_t (*write_)(Stream &, const void *);
-    const char *typeName_;
+    int32_t (*read_)(Stream &, void *);
+    int32_t (*write_)(Stream &, const void *);
 };
 
 } // namespace TTH
