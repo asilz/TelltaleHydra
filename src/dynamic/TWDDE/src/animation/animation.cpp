@@ -80,8 +80,6 @@ class Animation::Impl
     Flags *mInterfaceFlags;
     Symbol *mInterfaceSymbols;
 
-    bool *interfaceBlocks; // Stupid dynamic polymorphism
-
   public:
     float GetDuration() const { return mLength; }
 
@@ -341,7 +339,6 @@ class Animation::Impl
 
         Value animValue;
         mValues = new AnimationValueInterfaceBase *[mInterfaceCount];
-        interfaceBlocks = new bool[mInterfaceCount];
 
         size_t currentInterfaceIndex = 0;
         for (int32_t i = 0; i < animValueTypes; ++i)
@@ -355,28 +352,24 @@ class Animation::Impl
             case CompressedSkeletonPoseKeys2::GetTypeCRC64():
                 while (animValue.valueCount--)
                 {
-                    interfaceBlocks[currentInterfaceIndex] = CompressedSkeletonPoseKeys2::IS_BLOCKED;
                     mValues[currentInterfaceIndex++] = new CompressedSkeletonPoseKeys2;
                 }
                 break;
             case KeyframedValue<Transform>::GetTypeCRC64():
                 while (animValue.valueCount--)
                 {
-                    interfaceBlocks[currentInterfaceIndex] = KeyframedValue<Transform>::IS_BLOCKED;
                     mValues[currentInterfaceIndex++] = new KeyframedValue<Transform>;
                 }
                 break;
             case KeyframedValue<float>::GetTypeCRC64():
                 while (animValue.valueCount--)
                 {
-                    interfaceBlocks[currentInterfaceIndex] = KeyframedValue<float>::IS_BLOCKED;
                     mValues[currentInterfaceIndex++] = new KeyframedValue<float>;
                 }
                 break;
             case KeyframedValue<bool>::GetTypeCRC64():
                 while (animValue.valueCount--)
                 {
-                    interfaceBlocks[currentInterfaceIndex] = KeyframedValue<bool>::IS_BLOCKED;
                     mValues[currentInterfaceIndex++] = new KeyframedValue<bool>;
                 }
                 break;
@@ -388,7 +381,7 @@ class Animation::Impl
 
         for (int32_t i = 0; i < mInterfaceCount; ++i)
         {
-            size += stream.Read(*(mValues[i]), interfaceBlocks[i]);
+            size += stream.Read(*(mValues[i]), false);
         }
 
         mInterfaceFlags = new Flags[mInterfaceCount];
@@ -426,7 +419,6 @@ class Animation::Impl
         delete[] mValues;
         delete[] mInterfaceFlags;
         delete[] mInterfaceSymbols;
-        delete[] interfaceBlocks;
     }
 };
 
