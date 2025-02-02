@@ -88,7 +88,7 @@ class Animation::Impl
     size_t GetBoneCount() const
     {
         const CompressedSkeletonPoseKeys2 *cspk = nullptr;
-        for (size_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
+        for (int32_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
         {
             cspk = dynamic_cast<const CompressedSkeletonPoseKeys2 *>(mValues[i]);
         }
@@ -102,7 +102,7 @@ class Animation::Impl
     const Symbol *GetBonesCRC64() const
     {
         CompressedSkeletonPoseKeys2 *cspk = nullptr;
-        for (size_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
+        for (int32_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
         {
             cspk = dynamic_cast<CompressedSkeletonPoseKeys2 *>(mValues[i]);
         }
@@ -117,7 +117,7 @@ class Animation::Impl
     errno_t GetKeyframes(KeyframedValue<Vector3> *translations, KeyframedValue<Quaternion> *rotations) const
     {
         CompressedSkeletonPoseKeys2 *cspk = nullptr;
-        for (size_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
+        for (int32_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
         {
             cspk = dynamic_cast<CompressedSkeletonPoseKeys2 *>(mValues[i]);
         }
@@ -412,7 +412,7 @@ class Animation::Impl
     Impl() : mVersion(-1), mFlags(0), mName(Symbol(0)), mLength(0.0f), mAdditiveMask(0.0f), mToolProps(0), mInterfaceCount(0), mValues(nullptr), mInterfaceFlags(nullptr), mInterfaceSymbols(nullptr) {}
     ~Impl()
     {
-        for (size_t i = 0; i < mInterfaceCount; ++i)
+        for (int32_t i = 0; i < mInterfaceCount; ++i)
         {
             delete mValues[i];
         }

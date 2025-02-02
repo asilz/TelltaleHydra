@@ -14,8 +14,8 @@ class Skeleton
     Impl *impl;
 
   public:
-    int32_t Read(Stream &stream);
-    int32_t Write(Stream &stream) const;
+    int32_t Read(Stream &stream) noexcept;
+    int32_t Write(Stream &stream) const noexcept;
 
     /**
      * @brief Retrieves the local position of the bone with index @p boneIndex
@@ -23,7 +23,7 @@ class Skeleton
      * @param boneIndex index of the bone
      * @return constant position vector pointer, nullptr if index out of range
      */
-    const Vector3 *GetBoneLocalPosition(size_t boneIndex) const;
+    const Vector3 *GetBoneLocalPosition(size_t boneIndex) const noexcept;
 
     /**
      * @brief Retrieves the local rotation of the bone with index @p boneIndex
@@ -31,7 +31,7 @@ class Skeleton
      * @param boneIndex index of the bone
      * @return constant rotation quaternion pointer, nullptr if index out of range
      */
-    const Quaternion *GetBoneLocalRotation(size_t boneIndex) const;
+    const Quaternion *GetBoneLocalRotation(size_t boneIndex) const noexcept;
 
     /**
      * @brief Retrieves the index of the parent of the bone with index @p boneIndex
@@ -39,7 +39,7 @@ class Skeleton
      * @param boneIndex index of the bone
      * @return positive bone index if bone has a parent, otherwise -1
      */
-    int32_t GetBoneParentIndex(size_t boneIndex) const;
+    int32_t GetBoneParentIndex(size_t boneIndex) const noexcept;
 
     /**
      * @brief Retrieves a symbol containing a hash of the bone name with index @p boneIndex
@@ -47,21 +47,21 @@ class Skeleton
      * @param boneIndex index of the bone
      * @return Symbol with a name hash
      */
-    Symbol GetBoneCRC64(size_t boneIndex) const;
+    Symbol GetBoneCRC64(size_t boneIndex) const noexcept;
 
     /**
      * @brief Retrieves the number of bones in the skeleton
      *
      * @return bone count
      */
-    size_t GetBoneCount() const;
+    size_t GetBoneCount() const noexcept;
 
     /**
      * @brief Retrieves the version CRC32 of the animation
      *
      * @return CRC32
      */
-    uint32_t GetVersionCRC32() const;
+    uint32_t GetVersionCRC32() const noexcept;
 
     /**
      * @brief Retrieves the type CRC64 of this datatype

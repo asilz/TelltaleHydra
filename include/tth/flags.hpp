@@ -1,5 +1,6 @@
 #pragma once
 
+#include <tth/crypto/crc64.hpp>
 #include <tth/stream/stream.hpp>
 
 namespace TTH

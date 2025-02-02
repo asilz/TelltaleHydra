@@ -1,4 +1,5 @@
 add_library(twdde)
+target_compile_options(twdde PRIVATE -Wall)
 add_subdirectory(src)
 target_include_directories(twdde PRIVATE include)
 target_include_directories(twdde PRIVATE ../../../include)

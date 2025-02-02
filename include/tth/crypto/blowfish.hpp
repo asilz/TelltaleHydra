@@ -13,7 +13,7 @@ namespace Blowfish
  * @param input Encrypted data
  * @return Decrypted data
  */
-uint64_t DecryptBlock(uint64_t input);
+uint64_t DecryptBlock(uint64_t input) noexcept;
 
 /**
  * @brief Encrypts an 8 byte block of data using blowfish
@@ -21,7 +21,7 @@ uint64_t DecryptBlock(uint64_t input);
  * @param input Decrypted data
  * @return Encrypted data
  */
-uint64_t EncryptBlock(uint64_t input);
+uint64_t EncryptBlock(uint64_t input) noexcept;
 
 }; // namespace Blowfish
 }; // namespace TTH

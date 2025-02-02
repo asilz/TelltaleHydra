@@ -14,6 +14,7 @@ class ToolProps
     int32_t Write(Stream &stream) const { return stream.Write(mbHasProps); }
 
     ToolProps(bool hasProps) : mbHasProps(hasProps) {}
+    ToolProps() : mbHasProps(false) {}
 
     static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("ToolProps"); }
     static constexpr bool IS_BLOCKED = false;

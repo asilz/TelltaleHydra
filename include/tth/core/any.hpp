@@ -71,8 +71,8 @@ class Any
     template <class T> static void DtorAny(void *obj) { delete static_cast<T *>(obj); }
     template <class T> static void *CopyAny(void *obj) { return new T{*static_cast<T *>(obj)}; }
 
-    template <class T> static int32_t ReadAny(Stream &stream, void *obj) { return stream.Read<T>(*static_cast<const T *>(obj, false)); }
-    template <class T> static int32_t WriteAny(Stream &stream, const void *obj) { return stream.Write<T>(*static_cast<const T *>(obj, false)); }
+    template <class T> static int32_t ReadAny(Stream &stream, void *obj) { return stream.Read<T>(*static_cast<T *>(obj), false); }
+    template <class T> static int32_t WriteAny(Stream &stream, const void *obj) { return stream.Write<T>(*static_cast<const T *>(obj), false); }
 
     void *obj_;
     void (*dtor_)(void *);

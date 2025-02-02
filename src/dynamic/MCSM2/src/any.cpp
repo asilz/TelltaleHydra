@@ -1,25 +1,22 @@
 #include <cassert>
+#include <d3dmesh.hpp>
+#include <tth/animation/animation.hpp>
+#include <tth/container/dcarray.hpp>
+#include <tth/container/map.hpp>
+#include <tth/container/sarray.hpp>
+#include <tth/container/set.hpp>
 #include <tth/core/any.hpp>
-#include <tth/meta/animation/animation.hpp>
-#include <tth/meta/bitset/base.hpp>
-#include <tth/meta/container/dcarray.hpp>
-#include <tth/meta/container/map.hpp>
-#include <tth/meta/container/sarray.hpp>
-#include <tth/meta/container/set.hpp>
-#include <tth/meta/d3dmesh/d3dmesh.hpp>
-#include <tth/meta/handle/handle.hpp>
-#include <tth/meta/linalg/quaternion.hpp>
-#include <tth/meta/linalg/trange.hpp>
-#include <tth/meta/linalg/transform.hpp>
-#include <tth/meta/linalg/vector.hpp>
-#include <tth/meta/prop/prop.hpp>
-#include <tth/meta/skeleton/skeleton.hpp>
-#include <tth/meta/t3texture/color.hpp>
-#include <tth/meta/t3texture/swizzle.hpp>
-#include <tth/meta/t3texture/t3texture.hpp>
-#include <tth/meta/uid/uid.hpp>
+#include <tth/crypto/crc64.hpp>
+#include <tth/d3dmesh/d3dmesh.hpp>
+#include <tth/flags.hpp>
+#include <tth/handle.hpp>
+#include <tth/prop/prop.hpp>
+#include <tth/skeleton/skeleton.hpp>
+#include <tth/string.hpp>
+#include <tth/texture/color.hpp>
+#include <tth/texture/t3texture.hpp>
+#include <tth/trange.hpp>
 #include <type_traits>
-#include <utility>
 
 namespace TTH
 {
@@ -39,7 +36,7 @@ using unsigned__int64 = uint64_t;
 using __int64 = int64_t;
 #endif
 
-Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(nullptr), write_(nullptr), typeName_(nullptr)
+Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(nullptr), write_(nullptr)
 {
     switch (hash)
     {
@@ -365,7 +362,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<HandleLock<Animation>>();
         break;
     case 0x1DDC6104AA9DFDC0:
-        SetType<DCArray<T3MaterialPreShader>>();
+        // SetType<DCArray<T3MaterialPreShader>>();
         break;
     case 0x1DF7C31EA25EAE57:
         // SetType<KeyframedValue<Handle<SoundBusSnapshot::SnapshotSuite>>>();
@@ -449,7 +446,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         SetType<DCArray<String>>();
         break;
     case 0x2491B84DAED1E76B:
-        SetType<DCArray<T3MaterialPassData>>();
+        // SetType<DCArray<T3MaterialPassData>>();
         break;
     case 0x24A03076F08204F4:
         // SetType<FlagsT3LightEnvGroupSet>();
@@ -743,7 +740,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DlgNodeMarker>();
         break;
     case 0x3B965660D71DE2A7:
-        SetType<DCArray<T3OcclusionMeshBatch>>();
+        // SetType<DCArray<T3OcclusionMeshBatch>>();
         break;
     case 0x3BC3CB16F9AA0F31:
         // SetType<List<Handle<T3Texture>>>();
@@ -878,7 +875,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Map<String, StyleGuideRef, less<String>>>();
         break;
     case 0x48588668F74FED9F:
-        SetType<UID::Owner>();
+        // SetType<UID::Owner>();
         break;
     case 0x487D0696C99D7761:
         // SetType<EnumEmitterBoneSelection>();
@@ -920,7 +917,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<T3VertexBufferSample<T3PositionSampleData, T3HeapAllocator>>();
         break;
     case 0x4BD04E27E6716EA0:
-        SetType<UID::Generator>();
+        // SetType<UID::Generator>();
         break;
     case 0x4C199A98E11DF819:
         SetType<BitSetBase<2>>();
@@ -1064,7 +1061,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<SoundEventName<0>>();
         break;
     case 0x584619F1AE300EEA:
-        SetType<T3Texture::RegionStreamHeader>();
+        // SetType<T3Texture::RegionStreamHeader>();
         break;
     case 0x585829C336CB2FA5:
         // SetType<CompressedSkeletonPoseKeys>();
@@ -1088,7 +1085,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         SetType<Map<String, PropertySet, std::less<String>>>();
         break;
     case 0x59D13F814FD13B69:
-        SetType<CompressedSkeletonPoseKeys2>();
+        // SetType<CompressedSkeletonPoseKeys2>();
         break;
     case 0x59F6BEC43DCEDCA4:
         SetType<KeyframedValue<Vector2>>();
@@ -1214,7 +1211,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Handle<ParticleProperties>>();
         break;
     case 0x62C9E560C8DCEC67:
-        // SetType<Quaternion>();
+        SetType<Quaternion>();
         break;
     case 0x62E12E4195FD62D1:
         // SetType<KeyframedValue<SoundEventName<0>>>();
@@ -1373,7 +1370,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<anm>();
         break;
     case 0x73AC7A77C69A13A9:
-        SetType<DCArray<T3MeshEffectPreloadEntry>>();
+        // SetType<DCArray<T3MeshEffectPreloadEntry>>();
         break;
     case 0x73CD313F2A6634FF:
         // SetType<Set<String, StringCompareCaseInsensitive>>();
@@ -1421,10 +1418,10 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<KeyframedValue<ScriptEnum>::Sample>>();
         break;
     case 0x764A963C6BAC44EA:
-        SetType<T3MeshEffectPreloadDynamicFeatures>();
+        // SetType<T3MeshEffectPreloadDynamicFeatures>();
         break;
     case 0x76592B0CF8E8A12F:
-        SetType<DCArray<T3MeshBoneEntry>>();
+        // SetType<DCArray<T3MeshBoneEntry>>();
         break;
     case 0x766BB06D64BF383B:
         // SetType<MeshSceneEnlightenData>();
@@ -1508,7 +1505,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ResourceGroups>();
         break;
     case 0x7E69BFAB6FFA19EC:
-        SetType<T3MeshEffectPreload>();
+        // SetType<T3MeshEffectPreload>();
         break;
     case 0x7ED5149ED891D304:
         // SetType<LipSync2>();
@@ -1613,7 +1610,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<AnimatedValueInterface<Symbol>>();
         break;
     case 0x86DD6FDD80394AB3:
-        SetType<BoneContraints>();
+        // SetType<BoneContraints>();
         break;
     case 0x8758F70880295F9B:
         // SetType<Handle<SoundAmbience::AmbienceDefinition>>();
@@ -1634,7 +1631,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         SetType<DCArray<Color>>();
         break;
     case 0x885A35D99A8D1A4D:
-        SetType<Set<Symbol, std::less<Symbol>>>();
+        // SetType<Set<Symbol, std::less<Symbol>>>();
         break;
     case 0x88E2A4048B7CAC53:
         SetType<AnimationValueInterfaceBase>();
@@ -2024,7 +2021,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<Map<String, LogicGroup::LogicItem, less<String>>>();
         break;
     case 0xA98F0652295DE685:
-        SetType<EnumT3MaterialLightModelType>();
+        // SetType<EnumT3MaterialLightModelType>();
         break;
     case 0xAA9E970095A20B0E:
         // SetType<StyleIdleTransitionsRes>();
@@ -2195,7 +2192,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<AnimationManager>();
         break;
     case 0xBC62744AC9114C72:
-        SetType<Set<int, std::less<int>>>();
+        // SetType<Set<int, std::less<int>>>();
         break;
     case 0xBC6B9F28CC33A947:
         // SetType<Procedural_LookAt>();
@@ -2333,7 +2330,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<EnumTextOrientationType>();
         break;
     case 0xC995828AC3B803F2:
-        SetType<DCArray<Skeleton::Entry>>();
+        // SetType<DCArray<Skeleton::Entry>>();
         break;
     case 0xC9CA51C8795945F0:
         // SetType<DCArray<WalkBoxes::Vert>>();
@@ -2379,6 +2376,10 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         break;
     case 0xCD75DC4F6B9F15D2:
         SetType<PropertySet>();
+        {
+            PropertySet *prop = GetTypePtr<PropertySet>();
+            prop->Create();
+        }
         break;
     case 0xCD9B448F1003E791:
         SetType<KeyframedValue<Color>>();
@@ -2390,7 +2391,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<ChoreInst>();
         break;
     case 0xCDD094E2E769C2B5:
-        // SetType<ToolProps>();
+        SetType<ToolProps>();
         break;
     case 0xCDFC7236DB3B636B:
         // SetType<EnumRenderTextureResolution>();
@@ -2603,7 +2604,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<SingleValue<Symbol>>();
         break;
     case 0xE0F187F2BB24DD1F:
-        SetType<T3MaterialTexture>();
+        // SetType<T3MaterialTexture>();
         break;
     case 0xE0FDB8250AD3923D:
         // SetType<AnimatedValueInterface<String>>();
@@ -2720,7 +2721,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<DCArray<Handle<AnimOrChore>>>();
         break;
     case 0xE9FA4A9E9D453359:
-        SetType<Skeleton::Entry>();
+        // SetType<Skeleton::Entry>();
         break;
     case 0xEA086C95C87CA185:
         // SetType<EnlightenModule::EnlightenPrimitiveSettings>();
@@ -2924,7 +2925,7 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         // SetType<preloadpackagertd>();
         break;
     case 0xFE96A13E293CC8EF:
-        // SetType<Map<String, DCArray<unsignedchar>, less<String>>>();
+        SetType<Map<String, DCArray<unsigned char>, std::less<String>>>();
         break;
     case 0xFF15DC09F8B4F0E1:
         // SetType<IdleTransitionSettings>();

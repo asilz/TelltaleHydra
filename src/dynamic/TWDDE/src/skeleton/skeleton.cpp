@@ -84,7 +84,7 @@ class Skeleton::Impl
         BoneContraints mConstraints;
         Flags mFlags;
 
-        int32_t Read(Stream &stream)
+        int32_t Read(Stream &stream) noexcept
         {
             int32_t size = 0;
             int32_t err;
@@ -175,7 +175,7 @@ class Skeleton::Impl
             return size;
         }
 
-        int32_t Write(Stream &stream) const
+        int32_t Write(Stream &stream) const noexcept
         {
             int32_t size = 0;
             int32_t err;
@@ -272,7 +272,7 @@ class Skeleton::Impl
     DCArray<Entry> mEntries;
 
   public:
-    Symbol GetBoneCRC64(size_t boneIndex) const
+    Symbol GetBoneCRC64(size_t boneIndex) const noexcept
     {
         if (boneIndex < mEntries.size())
         {
@@ -280,7 +280,7 @@ class Skeleton::Impl
         }
         return 0;
     }
-    const Vector3 *GetBoneLocalPosition(size_t boneIndex) const
+    const Vector3 *GetBoneLocalPosition(size_t boneIndex) const noexcept
     {
         if (boneIndex < mEntries.size())
         {
@@ -288,7 +288,7 @@ class Skeleton::Impl
         }
         return nullptr;
     }
-    const Quaternion *GetBoneLocalRotation(size_t boneIndex) const
+    const Quaternion *GetBoneLocalRotation(size_t boneIndex) const noexcept
     {
         if (boneIndex < mEntries.size())
         {
@@ -296,22 +296,22 @@ class Skeleton::Impl
         }
         return nullptr;
     }
-    int32_t Read(Stream &stream) { return stream.Read(mEntries); }
-    int32_t Write(Stream &stream) const { return stream.Write(mEntries); }
+    int32_t Read(Stream &stream) noexcept { return stream.Read(mEntries); }
+    int32_t Write(Stream &stream) const noexcept { return stream.Write(mEntries); }
 
-    int32_t GetBoneParentIndex(size_t boneIndex) const { return mEntries[boneIndex].mParentIndex; }
+    int32_t GetBoneParentIndex(size_t boneIndex) const noexcept { return mEntries[boneIndex].mParentIndex; }
 
-    size_t GetBoneCount() const { return mEntries.size(); }
+    size_t GetBoneCount() const noexcept { return mEntries.size(); }
 };
 
-Symbol Skeleton::GetBoneCRC64(size_t boneIndex) const { return impl->GetBoneCRC64(boneIndex); }
-const Vector3 *Skeleton::GetBoneLocalPosition(size_t boneIndex) const { return impl->GetBoneLocalPosition(boneIndex); }
-const Quaternion *Skeleton::GetBoneLocalRotation(size_t boneIndex) const { return impl->GetBoneLocalRotation(boneIndex); }
-int32_t Skeleton::GetBoneParentIndex(size_t boneIndex) const { return impl->GetBoneParentIndex(boneIndex); }
-size_t Skeleton::GetBoneCount() const { return impl->GetBoneCount(); }
+Symbol Skeleton::GetBoneCRC64(size_t boneIndex) const noexcept { return impl->GetBoneCRC64(boneIndex); }
+const Vector3 *Skeleton::GetBoneLocalPosition(size_t boneIndex) const noexcept { return impl->GetBoneLocalPosition(boneIndex); }
+const Quaternion *Skeleton::GetBoneLocalRotation(size_t boneIndex) const noexcept { return impl->GetBoneLocalRotation(boneIndex); }
+int32_t Skeleton::GetBoneParentIndex(size_t boneIndex) const noexcept { return impl->GetBoneParentIndex(boneIndex); }
+size_t Skeleton::GetBoneCount() const noexcept { return impl->GetBoneCount(); }
 
-int32_t Skeleton::Read(Stream &stream) { return impl->Read(stream); }
-int32_t Skeleton::Write(Stream &stream) const { return impl->Write(stream); }
+int32_t Skeleton::Read(Stream &stream) noexcept { return impl->Read(stream); }
+int32_t Skeleton::Write(Stream &stream) const noexcept { return impl->Write(stream); }
 
 errno_t Skeleton::Create()
 {

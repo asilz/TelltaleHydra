@@ -10,13 +10,27 @@
 #include <cassert>
 #include <tth/animation/animation.hpp>
 #include <tth/core/log.hpp>
+#include <tth/d3dmesh/d3dmesh.hpp>
 #include <tth/skeleton/skeleton.hpp>
+#include <vector>
 
 namespace TTH
 {
 static void LogCallback(const char *msg, char *userData) { TTH_LOG_INFO("%s\n", msg); }
 
-errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animation, size_t animationCount, size_t meshCount)
+static errno_t GetGlobalMatrix(aiMatrix4x4 &result, const aiNode &node)
+{
+    if (node.mParent != nullptr)
+    {
+        aiMatrix4x4 parentGlobalTransform;
+        GetGlobalMatrix(parentGlobalTransform, *node.mParent);
+        result *= parentGlobalTransform;
+    }
+    result *= node.mTransformation;
+    return 0;
+}
+
+errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animation, D3DMesh *meshes, size_t animationCount, size_t meshCount)
 {
     aiLogStream stream;
     stream.callback = LogCallback;
@@ -113,6 +127,103 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
 
         delete[] translations;
         delete[] rotations;
+    }
+
+    scene.mNumMeshes = meshCount;
+    scene.mMeshes = new aiMesh *[scene.mNumMeshes];
+    for (unsigned int meshIndex = 0; meshIndex < scene.mNumMeshes; ++meshIndex)
+    {
+        scene.mMeshes[meshIndex] = new aiMesh;
+        scene.mMeshes[meshIndex]->mNumFaces = meshes[meshIndex].GetIndexCount(0, 0) / 3;
+        scene.mMeshes[meshIndex]->mFaces = new aiFace[scene.mMeshes[meshIndex]->mNumFaces];
+        D3DMesh::GFXPlatformFormat format;
+        const uint8_t *indices = static_cast<const uint8_t *>(meshes[meshIndex].GetIndices(format, 0, 0));
+        for (unsigned int i = 0; i < scene.mMeshes[meshIndex]->mNumFaces; ++i)
+        {
+            scene.mMeshes[meshIndex]->mFaces[i].mNumIndices = 3;
+            scene.mMeshes[meshIndex]->mFaces[i].mIndices = new unsigned int[scene.mMeshes[meshIndex]->mFaces[i].mNumIndices]();
+
+            memcpy(&scene.mMeshes[meshIndex]->mFaces[i].mIndices[0], indices, D3DMesh::GetFormatStride(format));
+            indices += D3DMesh::GetFormatStride(format);
+            memcpy(&scene.mMeshes[meshIndex]->mFaces[i].mIndices[1], indices, D3DMesh::GetFormatStride(format));
+            indices += D3DMesh::GetFormatStride(format);
+            memcpy(&scene.mMeshes[meshIndex]->mFaces[i].mIndices[2], indices, D3DMesh::GetFormatStride(format));
+            indices += D3DMesh::GetFormatStride(format);
+        }
+
+        scene.mMeshes[meshIndex]->mNumVertices = meshes[meshIndex].GetVertexCount(0, 0);
+        scene.mMeshes[meshIndex]->mNumBones = meshes[meshIndex].GetBoneCount(0);
+
+        scene.mMeshes[meshIndex]->mVertices = new aiVector3D[scene.mMeshes[meshIndex]->mNumVertices];
+        scene.mMeshes[meshIndex]->mNormals = new aiVector3D[scene.mMeshes[meshIndex]->mNumVertices];
+        scene.mMeshes[meshIndex]->mTangents = new aiVector3D[scene.mMeshes[meshIndex]->mNumVertices];
+        const uint16_t *positions = static_cast<const uint16_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position, 0, 0));
+        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN16x4);
+        const uint8_t *normals = static_cast<const uint8_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal, 0, 0));
+        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_SN8x4);
+        const uint8_t *tangents = static_cast<const uint8_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent, 0, 0));
+        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_SN8x4);
+        const uint32_t *blendWeights = static_cast<const uint32_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendWeight, 0, 0));
+        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2);
+        const uint8_t *blendIndices = static_cast<const uint8_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendIndex, 0, 0));
+        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_U8x4);
+
+        std::vector<std::vector<aiVertexWeight>> vertexWeights(scene.mMeshes[meshIndex]->mNumBones);
+
+        for (unsigned int i = 0; i < scene.mMeshes[meshIndex]->mNumVertices; ++i)
+        {
+            scene.mMeshes[meshIndex]->mVertices[i].x = *(positions++) / 65535.0f;
+            scene.mMeshes[meshIndex]->mVertices[i].y = *(positions++) / 65535.0f;
+            scene.mMeshes[meshIndex]->mVertices[i].z = *(positions++) / 65535.0f;
+
+            const Vector3 *offset = meshes[meshIndex].GetPositionOffset();
+            const Vector3 *scale = meshes[meshIndex].GetPositionScale();
+            scene.mMeshes[meshIndex]->mVertices[i].x = scene.mMeshes[meshIndex]->mVertices[i].x * scale->x + offset->x;
+            scene.mMeshes[meshIndex]->mVertices[i].y = scene.mMeshes[meshIndex]->mVertices[i].y * scale->y + offset->y;
+            scene.mMeshes[meshIndex]->mVertices[i].z = scene.mMeshes[meshIndex]->mVertices[i].z * scale->z + offset->z;
+
+            scene.mMeshes[meshIndex]->mNormals[i].x = *(normals++) / 127.0f;
+            scene.mMeshes[meshIndex]->mNormals[i].y = *(normals++) / 127.0f;
+            scene.mMeshes[meshIndex]->mNormals[i].z = *(normals++) / 127.0f;
+            ++normals;
+
+            scene.mMeshes[meshIndex]->mTangents[i].x = *(tangents++) / 127.0f;
+            scene.mMeshes[meshIndex]->mTangents[i].y = *(tangents++) / 127.0f;
+            scene.mMeshes[meshIndex]->mTangents[i].z = *(tangents++) / 127.0f;
+            ++tangents;
+
+            vertexWeights[*(blendIndices++)].emplace_back(i, 1.0f - (float)(*blendWeights & 0x3ff) / 1023.0f / 8.0f - (float)(*blendWeights >> 30) / 8.0f -
+                                                                 (float)(*blendWeights >> 10 & 0x3ff) / 1023.0f / 3.0f - (float)(*blendWeights >> 20 & 0x3ff) / 1023.0f / 4.0f);
+            vertexWeights[*(blendIndices++)].emplace_back(i, (float)(*blendWeights & 0x3ff) / 1023.0f / 8.0f + (float)(*blendWeights >> 30) / 8.0f);
+            vertexWeights[*(blendIndices++)].emplace_back(i, (float)(*blendWeights >> 10 & 0x3ff) / 1023.0f / 3.0f);
+            vertexWeights[*(blendIndices++)].emplace_back(i, (float)(*blendWeights >> 20 & 0x3ff) / 1023.0f / 4.0f);
+            ++blendWeights;
+        }
+
+        scene.mMeshes[meshIndex]->mBones = new aiBone *[scene.mMeshes[meshIndex]->mNumBones];
+        for (unsigned int i = 0; i < scene.mMeshes[meshIndex]->mNumBones; ++i)
+        {
+            scene.mMeshes[meshIndex]->mBones[i] = new aiBone();
+            scene.mMeshes[meshIndex]->mBones[i]->mName.length =
+                snprintf(scene.mMeshes[meshIndex]->mBones[i]->mName.data, sizeof(scene.mMeshes[meshIndex]->mName.data), "%016" PRIX64, meshes[meshIndex].GetBoneName(0, i));
+
+            scene.mMeshes[meshIndex]->mBones[i]->mNode = scene.mRootNode->FindNode(scene.mMeshes[meshIndex]->mBones[i]->mName);
+            GetGlobalMatrix(scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix, *scene.mMeshes[meshIndex]->mBones[i]->mNode);
+            aiMatrix4Inverse(&scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix);
+
+            /* Due to inaccuracy in matrix functions, we need to set the matrix values to an accurate value */
+            scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix.d1 = 0.0f;
+            scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix.d2 = 0.0f;
+            scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix.d3 = 0.0f;
+            scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix.d4 = 1.0f;
+
+            scene.mMeshes[meshIndex]->mBones[i]->mNumWeights = vertexWeights[i].size();
+            scene.mMeshes[meshIndex]->mBones[i]->mWeights = new aiVertexWeight[scene.mMeshes[meshIndex]->mBones[i]->mNumWeights];
+            for (unsigned int j = 0; j < scene.mMeshes[meshIndex]->mBones[i]->mNumWeights; ++j)
+            {
+                scene.mMeshes[meshIndex]->mBones[i]->mWeights[j] = vertexWeights[i][j];
+            }
+        }
     }
 
     Assimp::Exporter exporter;

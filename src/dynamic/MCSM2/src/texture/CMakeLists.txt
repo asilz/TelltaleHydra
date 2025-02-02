@@ -1,0 +1,1 @@
+target_sources(mcsm2 PRIVATE t3texture.cpp)
