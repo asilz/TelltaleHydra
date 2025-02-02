@@ -258,6 +258,7 @@ class D3DMesh::Impl
         {
             if (mMeshData.mVertexStates[0].mpIndexBuffer[i].mBufferUsage == 0x2)
             {
+                format = static_cast<GFXPlatformFormat>(mMeshData.mVertexStates[0].mpIndexBuffer[i].mBufferFormat);
                 return static_cast<const void *>(ptr + mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mStartIndex);
             }
             ptr += mMeshData.mVertexStates[0].mpIndexBuffer[i].mStride * mMeshData.mVertexStates[0].mpIndexBuffer[i].mCount;
@@ -272,6 +273,7 @@ class D3DMesh::Impl
     const Vector3 *GetPositionOffset() const noexcept { return &mMeshData.mPositionOffset; }
     uint64_t GetBoneName(size_t LODIndex, size_t boneIndex) const noexcept { return mMeshData.mLODs[0].mBones[boneIndex].mCRC64; }
     size_t GetBoneCount(size_t LODIndex) const noexcept { return mMeshData.mLODs[0].mBones.size(); }
+    size_t GetIndexCount() const noexcept { return mMeshData.mVertexStates[0].mpIndexBuffer[0].mCount; }
 };
 
 errno_t D3DMesh::Create()
@@ -290,9 +292,10 @@ size_t D3DMesh::GetBatchCount(size_t LODIndex) const noexcept { return impl->Get
 size_t D3DMesh::GetVertexCount() const noexcept { return impl->GetVertexCount(); }
 size_t D3DMesh::GetVertexCount(size_t LODIndex, size_t batchIndex) const noexcept { return impl->GetVertexCount(LODIndex, batchIndex); }
 size_t D3DMesh::GetIndexCount(size_t LODIndex, size_t batchIndex) const noexcept { return impl->GetIndexCount(LODIndex, batchIndex); }
+size_t D3DMesh::GetIndexCount() const noexcept { return impl->GetIndexCount(); }
 size_t D3DMesh::GetVertexBufferCount() const noexcept { return impl->GetVertexBufferCount(); }
 
-const void *D3DMesh::GetVertexBuffer(size_t bufferIndex, size_t LODIndex, size_t batchIndex, AttributeDescription *descriptions) const noexcept
+const void *D3DMesh::GetVertexBuffer(size_t bufferIndex, size_t LODIndex, size_t batchIndex, AttributeDescription descriptions[32]) const noexcept
 {
     return impl->GetVertexBuffer(bufferIndex, LODIndex, batchIndex, descriptions);
 }

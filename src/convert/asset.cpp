@@ -129,12 +129,22 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
         delete[] rotations;
     }
 
+    scene.mNumMaterials = 1;
+    scene.mMaterials = new aiMaterial *[1];
+    scene.mMaterials[0] = new aiMaterial();
+
     scene.mNumMeshes = meshCount;
     scene.mMeshes = new aiMesh *[scene.mNumMeshes];
+    scene.mRootNode->mNumMeshes = scene.mNumMeshes;
+    scene.mRootNode->mMeshes = new unsigned int[scene.mRootNode->mNumMeshes];
+
     for (unsigned int meshIndex = 0; meshIndex < scene.mNumMeshes; ++meshIndex)
     {
+        scene.mRootNode->mMeshes[meshIndex] = meshIndex;
         scene.mMeshes[meshIndex] = new aiMesh;
-        scene.mMeshes[meshIndex]->mNumFaces = meshes[meshIndex].GetIndexCount(0, 0) / 3;
+        scene.mMeshes[meshIndex]->mPrimitiveTypes = aiPrimitiveType_TRIANGLE;
+        scene.mMeshes[meshIndex]->mMaterialIndex = 0;
+        scene.mMeshes[meshIndex]->mNumFaces = meshes[meshIndex].GetIndexCount() / 3;
         scene.mMeshes[meshIndex]->mFaces = new aiFace[scene.mMeshes[meshIndex]->mNumFaces];
         D3DMesh::GFXPlatformFormat format;
         const uint8_t *indices = static_cast<const uint8_t *>(meshes[meshIndex].GetIndices(format, 0, 0));
@@ -151,53 +161,135 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
             indices += D3DMesh::GetFormatStride(format);
         }
 
-        scene.mMeshes[meshIndex]->mNumVertices = meshes[meshIndex].GetVertexCount(0, 0);
+        scene.mMeshes[meshIndex]->mNumVertices = meshes[meshIndex].GetVertexCount();
         scene.mMeshes[meshIndex]->mNumBones = meshes[meshIndex].GetBoneCount(0);
+
+        const void *vertexBuffers[32];
+        D3DMesh::AttributeDescription descriptions[32][32];
 
         scene.mMeshes[meshIndex]->mVertices = new aiVector3D[scene.mMeshes[meshIndex]->mNumVertices];
         scene.mMeshes[meshIndex]->mNormals = new aiVector3D[scene.mMeshes[meshIndex]->mNumVertices];
         scene.mMeshes[meshIndex]->mTangents = new aiVector3D[scene.mMeshes[meshIndex]->mNumVertices];
-        const uint16_t *positions = static_cast<const uint16_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position, 0, 0));
-        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN16x4);
-        const uint8_t *normals = static_cast<const uint8_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal, 0, 0));
-        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_SN8x4);
-        const uint8_t *tangents = static_cast<const uint8_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent, 0, 0));
-        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_SN8x4);
-        const uint32_t *blendWeights = static_cast<const uint32_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendWeight, 0, 0));
-        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2);
-        const uint8_t *blendIndices = static_cast<const uint8_t *>(meshes[meshIndex].GetVertexBuffer(format, D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendIndex, 0, 0));
-        assert(format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_U8x4);
 
         std::vector<std::vector<aiVertexWeight>> vertexWeights(scene.mMeshes[meshIndex]->mNumBones);
 
-        for (unsigned int i = 0; i < scene.mMeshes[meshIndex]->mNumVertices; ++i)
+        for (size_t bufferIndex = 0; bufferIndex < meshes[meshIndex].GetVertexBufferCount(); ++bufferIndex)
         {
-            scene.mMeshes[meshIndex]->mVertices[i].x = *(positions++) / 65535.0f;
-            scene.mMeshes[meshIndex]->mVertices[i].y = *(positions++) / 65535.0f;
-            scene.mMeshes[meshIndex]->mVertices[i].z = *(positions++) / 65535.0f;
+            vertexBuffers[bufferIndex] = meshes[meshIndex].GetVertexBuffer(bufferIndex, 0, 0, descriptions[bufferIndex]);
 
-            const Vector3 *offset = meshes[meshIndex].GetPositionOffset();
-            const Vector3 *scale = meshes[meshIndex].GetPositionScale();
-            scene.mMeshes[meshIndex]->mVertices[i].x = scene.mMeshes[meshIndex]->mVertices[i].x * scale->x + offset->x;
-            scene.mMeshes[meshIndex]->mVertices[i].y = scene.mMeshes[meshIndex]->mVertices[i].y * scale->y + offset->y;
-            scene.mMeshes[meshIndex]->mVertices[i].z = scene.mMeshes[meshIndex]->mVertices[i].z * scale->z + offset->z;
+            for (unsigned int vertexIndex = 0; vertexIndex < scene.mMeshes[meshIndex]->mNumVertices; ++vertexIndex)
+            {
+                float blendWeights[4];
+                uint8_t blendIndices[4];
+                uint8_t criteria = 0;
+                for (size_t attributeIndex = 0; attributeIndex < meshes[meshIndex].GetVertexBufferAttributeCount(bufferIndex); ++attributeIndex)
+                {
 
-            scene.mMeshes[meshIndex]->mNormals[i].x = *(normals++) / 127.0f;
-            scene.mMeshes[meshIndex]->mNormals[i].y = *(normals++) / 127.0f;
-            scene.mMeshes[meshIndex]->mNormals[i].z = *(normals++) / 127.0f;
-            ++normals;
+                    if (descriptions[bufferIndex][attributeIndex].attribute == D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position)
+                    {
 
-            scene.mMeshes[meshIndex]->mTangents[i].x = *(tangents++) / 127.0f;
-            scene.mMeshes[meshIndex]->mTangents[i].y = *(tangents++) / 127.0f;
-            scene.mMeshes[meshIndex]->mTangents[i].z = *(tangents++) / 127.0f;
-            ++tangents;
+                        if (descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN16x4)
+                        {
+                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].x = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
+                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].y = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
+                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].z = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 2);
+                        }
+                        else if (descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_F32x3)
+                        {
+                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].x = *static_cast<const float *>(vertexBuffers[bufferIndex]);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const float *>(vertexBuffers[bufferIndex]) + 1);
+                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].y = *static_cast<const float *>(vertexBuffers[bufferIndex]);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const float *>(vertexBuffers[bufferIndex]) + 1);
+                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].z = *static_cast<const float *>(vertexBuffers[bufferIndex]);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const float *>(vertexBuffers[bufferIndex]) + 1);
+                        }
+                        else
+                        {
+                            assert(0);
+                        }
 
-            vertexWeights[*(blendIndices++)].emplace_back(i, 1.0f - (float)(*blendWeights & 0x3ff) / 1023.0f / 8.0f - (float)(*blendWeights >> 30) / 8.0f -
-                                                                 (float)(*blendWeights >> 10 & 0x3ff) / 1023.0f / 3.0f - (float)(*blendWeights >> 20 & 0x3ff) / 1023.0f / 4.0f);
-            vertexWeights[*(blendIndices++)].emplace_back(i, (float)(*blendWeights & 0x3ff) / 1023.0f / 8.0f + (float)(*blendWeights >> 30) / 8.0f);
-            vertexWeights[*(blendIndices++)].emplace_back(i, (float)(*blendWeights >> 10 & 0x3ff) / 1023.0f / 3.0f);
-            vertexWeights[*(blendIndices++)].emplace_back(i, (float)(*blendWeights >> 20 & 0x3ff) / 1023.0f / 4.0f);
-            ++blendWeights;
+                        const Vector3 *offset = meshes[meshIndex].GetPositionOffset();
+                        const Vector3 *scale = meshes[meshIndex].GetPositionScale();
+                        scene.mMeshes[meshIndex]->mVertices[vertexIndex].x = scene.mMeshes[meshIndex]->mVertices[vertexIndex].x * scale->x + offset->x;
+                        scene.mMeshes[meshIndex]->mVertices[vertexIndex].y = scene.mMeshes[meshIndex]->mVertices[vertexIndex].y * scale->y + offset->y;
+                        scene.mMeshes[meshIndex]->mVertices[vertexIndex].z = scene.mMeshes[meshIndex]->mVertices[vertexIndex].z * scale->z + offset->z;
+                    }
+
+                    if (descriptions[bufferIndex][attributeIndex].attribute == D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal)
+                    {
+                        assert(descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_SN8x4);
+                        scene.mMeshes[meshIndex]->mNormals[vertexIndex].x = *(static_cast<const int8_t *>(vertexBuffers[bufferIndex])) / 127.0f;
+                        vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const int8_t *>(vertexBuffers[bufferIndex]) + 1);
+                        scene.mMeshes[meshIndex]->mNormals[vertexIndex].y = *(static_cast<const int8_t *>(vertexBuffers[bufferIndex])) / 127.0f;
+                        vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const int8_t *>(vertexBuffers[bufferIndex]) + 1);
+                        scene.mMeshes[meshIndex]->mNormals[vertexIndex].z = *(static_cast<const int8_t *>(vertexBuffers[bufferIndex])) / 127.0f;
+                        vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const int8_t *>(vertexBuffers[bufferIndex]) + 2);
+                    }
+
+                    if (descriptions[bufferIndex][attributeIndex].attribute == D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent)
+                    {
+                        assert(descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_SN8x4);
+                        scene.mMeshes[meshIndex]->mTangents[vertexIndex].x = *(static_cast<const int8_t *>(vertexBuffers[bufferIndex])) / 127.0f;
+                        vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const int8_t *>(vertexBuffers[bufferIndex]) + 1);
+                        scene.mMeshes[meshIndex]->mTangents[vertexIndex].y = *(static_cast<const int8_t *>(vertexBuffers[bufferIndex])) / 127.0f;
+                        vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const int8_t *>(vertexBuffers[bufferIndex]) + 1);
+                        scene.mMeshes[meshIndex]->mTangents[vertexIndex].z = *(static_cast<const int8_t *>(vertexBuffers[bufferIndex])) / 127.0f;
+                        vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const int8_t *>(vertexBuffers[bufferIndex]) + 2);
+                    }
+
+                    if (descriptions[bufferIndex][attributeIndex].attribute == D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendIndex)
+                    {
+                        assert(descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_U8x4);
+                        memcpy(blendIndices, vertexBuffers[bufferIndex], sizeof(blendIndices));
+                        vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint8_t *>(vertexBuffers[bufferIndex]) + 4);
+                        ++criteria;
+                    }
+
+                    if (descriptions[bufferIndex][attributeIndex].attribute == D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendWeight)
+                    {
+                        if (descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN16x4)
+                        {
+                            blendWeights[0] = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
+                            blendWeights[1] = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
+                            blendWeights[2] = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
+                            blendWeights[3] = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
+                        }
+                        else if (descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
+                        {
+                            const uint32_t *weight = static_cast<const uint32_t *>(vertexBuffers[bufferIndex]);
+                            blendWeights[1] = (float)(*weight & 0x3ff) / 1023.0f / 8.0f + (float)(*weight >> 30) / 8.0f;
+                            blendWeights[2] = (float)(*weight >> 10 & 0x3ff) / 1023.0f / 3.0f;
+                            blendWeights[3] = (float)(*weight >> 20 & 0x3ff) / 1023.0f / 4.0f;
+                            blendWeights[0] = 1.0f - blendWeights[1] - blendWeights[2] - blendWeights[3];
+                            vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint32_t *>(vertexBuffers[bufferIndex]) + 1);
+                        }
+                        else
+                        {
+                            assert(0);
+                        }
+                        ++criteria;
+                    }
+                    if (criteria == 2)
+                    {
+                        vertexWeights[blendIndices[0]].emplace_back(vertexIndex, blendWeights[0]);
+                        vertexWeights[blendIndices[1]].emplace_back(vertexIndex, blendWeights[1]);
+                        vertexWeights[blendIndices[2]].emplace_back(vertexIndex, blendWeights[2]);
+                        vertexWeights[blendIndices[3]].emplace_back(vertexIndex, blendWeights[3]);
+                        criteria = 3;
+                    }
+                }
+                if (bufferIndex == 0)
+                {
+                    assert(criteria == 3);
+                }
+            }
         }
 
         scene.mMeshes[meshIndex]->mBones = new aiBone *[scene.mMeshes[meshIndex]->mNumBones];

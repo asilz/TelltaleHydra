@@ -142,6 +142,13 @@ class D3DMesh
     const void *GetVertexBuffer(size_t bufferIndex, size_t LODIndex, size_t batchIndex, AttributeDescription *descriptions) const noexcept;
 
     /**
+     * @brief Retrieves the number of vertex indices in the entire mesh
+     *
+     * @return Index count
+     */
+    size_t GetIndexCount() const noexcept;
+
+    /**
      * @brief Retrieves the number of vertex indices in the mesh LOD batch
      *
      * @param LODIndex index of the LOD
