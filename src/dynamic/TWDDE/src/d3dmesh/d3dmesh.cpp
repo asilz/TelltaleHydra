@@ -195,6 +195,76 @@ class D3DMesh::Impl
     }
 
     static constexpr bool IS_BLOCKED = true;
+
+    size_t GetVertexCount(size_t LODIndex, size_t batchIndex) const noexcept
+    {
+        return mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mMaxVertIndex - mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mMinVertIndex + 1;
+    }
+    size_t GetVertexCount() const noexcept { return mMeshData.mVertexCount; }
+    size_t GetBatchCount(size_t LODIndex) const noexcept { return mMeshData.mLODs[LODIndex].mBatches[0].size(); }
+    size_t GetLODCount() const noexcept { return mMeshData.mLODs.size(); }
+    size_t GetVertexBufferCount() const noexcept { return mMeshData.mVertexStates[0].mVertexBufferCount; }
+
+    size_t GetVertexBufferAttributeCount(size_t bufferIndex) const noexcept
+    {
+        size_t result = 0;
+        for (uint32_t i = 0; i < mMeshData.mVertexStates[0].mAttributeCount; ++i)
+        {
+            if (mMeshData.mVertexStates[0].mAttributes[i].mBufferIndex == bufferIndex)
+            {
+                ++result;
+            }
+        }
+        return result;
+    }
+
+    const void *GetVertexBuffer(size_t bufferIndex, size_t LODIndex, size_t batchIndex, AttributeDescription *descriptions) const noexcept
+    {
+        const uint8_t *ptr = async;
+        for (uint32_t i = 0; i < mMeshData.mVertexStates[0].mIndexBufferCount; ++i)
+        {
+            ptr += mMeshData.mVertexStates[0].mpIndexBuffer[i].mStride * mMeshData.mVertexStates[0].mpIndexBuffer[i].mCount;
+        }
+        for (size_t i = 0; i < bufferIndex; ++i)
+        {
+            ptr += mMeshData.mVertexStates[0].mpVertexBuffer[i].mStride * mMeshData.mVertexStates[0].mpVertexBuffer[i].mCount;
+        }
+        size_t descriptionsIndex = 0;
+        for (uint32_t i = 0; i < mMeshData.mVertexStates[0].mAttributeCount; ++i)
+        {
+            if (mMeshData.mVertexStates[0].mAttributes[i].mBufferIndex == bufferIndex)
+            {
+                descriptions[descriptionsIndex].attribute = static_cast<GFXPlatformVertexAttribute>(mMeshData.mVertexStates[0].mAttributes[i].mAttribute);
+                descriptions[descriptionsIndex].format = static_cast<GFXPlatformFormat>(mMeshData.mVertexStates[0].mAttributes[i].mFormat);
+                descriptions[descriptionsIndex].offset = mMeshData.mVertexStates[0].mAttributes[i].mBufferOffset;
+                ++descriptionsIndex;
+            }
+        }
+        return static_cast<const void *>(ptr + mMeshData.mVertexStates[0].mpVertexBuffer[bufferIndex].mStride * mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mMinVertIndex);
+    }
+    const void *GetIndices(GFXPlatformFormat &format, size_t LODIndex, size_t batchIndex) const noexcept
+    {
+        const uint8_t *ptr = async;
+        for (uint32_t i = 0; i < mMeshData.mVertexStates[0].mIndexBufferCount; ++i)
+        {
+            if (mMeshData.mVertexStates[0].mpIndexBuffer[i].mBufferUsage == 0x2)
+            {
+                format = static_cast<GFXPlatformFormat>(mMeshData.mVertexStates[0].mpIndexBuffer[i].mBufferFormat);
+                return static_cast<const void *>(ptr + mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mStartIndex);
+            }
+            ptr += mMeshData.mVertexStates[0].mpIndexBuffer[i].mStride * mMeshData.mVertexStates[0].mpIndexBuffer[i].mCount;
+        }
+        format = GFXPlatformFormat::eGFXPlatformFormat_None;
+        return nullptr;
+    }
+
+    size_t GetIndexCount(size_t LODIndex, size_t batchIndex) const noexcept { return mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mNumIndices; }
+
+    const Vector3 *GetPositionScale() const noexcept { return &mMeshData.mPositionScale; }
+    const Vector3 *GetPositionOffset() const noexcept { return &mMeshData.mPositionOffset; }
+    uint64_t GetBoneName(size_t LODIndex, size_t boneIndex) const noexcept { return mMeshData.mLODs[0].mBones[boneIndex].mCRC64; }
+    size_t GetBoneCount(size_t LODIndex) const noexcept { return mMeshData.mLODs[0].mBones.size(); }
+    size_t GetIndexCount() const noexcept { return mMeshData.mVertexStates[0].mpIndexBuffer[0].mCount; }
 };
 
 errno_t D3DMesh::Create()
@@ -207,12 +277,24 @@ void D3DMesh::Destroy() { delete impl; }
 int32_t D3DMesh::Read(Stream &stream) noexcept { return impl->Read(stream); }
 int32_t D3DMesh::Write(Stream &stream) const noexcept { return impl->Write(stream); }
 
-size_t D3DMesh::GetLODCount() const noexcept { return impl->mMeshData.mLODs.size(); }
-size_t D3DMesh::GetBatchCount(size_t LODIndex) const noexcept { return impl->mMeshData.mLODs[LODIndex].mBatches[0].size(); }
-size_t D3DMesh::GetVertexCount() const noexcept { return impl->mMeshData.mVertexCount; }
-size_t D3DMesh::GetVertexCount(size_t LODIndex, size_t batchIndex) const noexcept
-{
-    return impl->mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mMaxVertIndex - impl->mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mMaxVertIndex;
-}
+size_t D3DMesh::GetLODCount() const noexcept { return impl->GetLODCount(); }
+size_t D3DMesh::GetBatchCount(size_t LODIndex) const noexcept { return impl->GetBatchCount(LODIndex); }
+size_t D3DMesh::GetVertexCount() const noexcept { return impl->GetVertexCount(); }
+size_t D3DMesh::GetVertexCount(size_t LODIndex, size_t batchIndex) const noexcept { return impl->GetVertexCount(LODIndex, batchIndex); }
+size_t D3DMesh::GetIndexCount(size_t LODIndex, size_t batchIndex) const noexcept { return impl->GetIndexCount(LODIndex, batchIndex); }
+size_t D3DMesh::GetIndexCount() const noexcept { return impl->GetIndexCount(); }
+size_t D3DMesh::GetVertexBufferCount() const noexcept { return impl->GetVertexBufferCount(); }
 
+const void *D3DMesh::GetVertexBuffer(size_t bufferIndex, size_t LODIndex, size_t batchIndex, AttributeDescription descriptions[32]) const noexcept
+{
+    return impl->GetVertexBuffer(bufferIndex, LODIndex, batchIndex, descriptions);
+}
+size_t D3DMesh::GetVertexBufferAttributeCount(size_t bufferIndex) const noexcept { return impl->GetVertexBufferAttributeCount(bufferIndex); }
+
+const void *D3DMesh::GetIndices(GFXPlatformFormat &format, size_t LODIndex, size_t batchIndex) const noexcept { return impl->GetIndices(format, LODIndex, batchIndex); }
+
+const Vector3 *D3DMesh::GetPositionScale() const noexcept { return impl->GetPositionScale(); }
+const Vector3 *D3DMesh::GetPositionOffset() const noexcept { return impl->GetPositionOffset(); }
+uint64_t D3DMesh::GetBoneName(size_t LODIndex, size_t boneIndex) const noexcept { return impl->GetBoneName(LODIndex, boneIndex); }
+size_t D3DMesh::GetBoneCount(size_t LODIndex) const noexcept { return impl->GetBoneCount(LODIndex); }
 }; // namespace TTH

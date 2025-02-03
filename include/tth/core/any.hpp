@@ -6,6 +6,17 @@
 namespace TTH
 {
 
+template <typename T, typename = void> struct has_member_create_ : std::false_type
+{
+};
+
+template <typename T> struct has_member_create_<T, std::void_t<decltype(std::declval<T>().Create())>> : std::true_type
+{
+};
+
+// Helper variable template
+template <typename T> inline constexpr bool has_member_create_v_ = has_member_create_<T>::value;
+
 class Any
 {
   public:
@@ -48,6 +59,10 @@ class Any
     {
         this->~Any();
         obj_ = new T;
+        if constexpr (has_member_create_v_<T>)
+        {
+            static_cast<T *>(obj_)->Create();
+        }
         dtor_ = DtorAny<T>;
         read_ = ReadAny<T>;
         write_ = WriteAny<T>;
@@ -68,7 +83,14 @@ class Any
     uint32_t Write(Stream &stream) const { return write_(stream, obj_); }
 
   private:
-    template <class T> static void DtorAny(void *obj) { delete static_cast<T *>(obj); }
+    template <class T> static void DtorAny(void *obj)
+    {
+        if constexpr (has_member_create_v_<T>)
+        {
+            static_cast<T *>(obj)->Destroy();
+        }
+        delete static_cast<T *>(obj);
+    }
     template <class T> static void *CopyAny(void *obj) { return new T{*static_cast<T *>(obj)}; }
 
     template <class T> static int32_t ReadAny(Stream &stream, void *obj) { return stream.Read<T>(*static_cast<T *>(obj), false); }

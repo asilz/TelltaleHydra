@@ -133,7 +133,7 @@ class PropertySet::Impl
     ~Impl()
     {
         delete[] mGroups;
-        mEditorProp.Destory();
+        mEditorProp.Destroy();
     }
 
     int32_t mPropVersion;
@@ -152,7 +152,7 @@ errno_t PropertySet::Create()
     return 0;
 }
 
-void PropertySet::Destory() { delete impl; }
+void PropertySet::Destroy() { delete impl; }
 
 int32_t PropertySet::Read(Stream &stream) noexcept { return impl->Read(stream); }
 int32_t PropertySet::Write(Stream &stream) const noexcept { return impl->Write(stream); }

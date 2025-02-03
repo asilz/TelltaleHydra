@@ -16,7 +16,7 @@ class PropertySet
     int32_t Write(Stream &stream) const noexcept;
 
     errno_t Create();
-    void Destory();
+    void Destroy();
 
     static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("PropertySet"); }
     static constexpr bool IS_BLOCKED = true;

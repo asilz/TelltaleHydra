@@ -1596,6 +1596,15 @@ struct T3GFXVertexState
         }
         size += err;
 
+        for (uint32_t i = 0; i < mAttributeCount; ++i)
+        {
+            err = stream.Read(mAttributes[i], false);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+        }
         for (uint32_t i = 0; i < mIndexBufferCount; ++i)
         {
             err = stream.Read(mpIndexBuffer[i], false);
@@ -1614,15 +1623,7 @@ struct T3GFXVertexState
             }
             size += err;
         }
-        for (uint32_t i = 0; i < mAttributeCount; ++i)
-        {
-            err = stream.Read(mAttributes[i], false);
-            if (err < 0)
-            {
-                return err;
-            }
-            size += err;
-        }
+
         return size;
     }
     int32_t Write(Stream &stream) const
@@ -1654,6 +1655,15 @@ struct T3GFXVertexState
         }
         size += err;
 
+        for (uint32_t i = 0; i < mAttributeCount; ++i)
+        {
+            err = stream.Write(mAttributes[i], false);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+        }
         for (uint32_t i = 0; i < mIndexBufferCount; ++i)
         {
             err = stream.Write(mpIndexBuffer[i], false);
@@ -1672,15 +1682,7 @@ struct T3GFXVertexState
             }
             size += err;
         }
-        for (uint32_t i = 0; i < mAttributeCount; ++i)
-        {
-            err = stream.Write(mAttributes[i], false);
-            if (err < 0)
-            {
-                return err;
-            }
-            size += err;
-        }
+
         return size;
     }
     uint32_t mVertexCountPerInstance;

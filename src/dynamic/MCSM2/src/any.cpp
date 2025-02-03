@@ -2376,10 +2376,6 @@ Any::Any(uint64_t hash) : obj_(nullptr), dtor_(nullptr), copy_(nullptr), read_(n
         break;
     case 0xCD75DC4F6B9F15D2:
         SetType<PropertySet>();
-        {
-            PropertySet *prop = GetTypePtr<PropertySet>();
-            prop->Create();
-        }
         break;
     case 0xCD9B448F1003E791:
         SetType<KeyframedValue<Color>>();
