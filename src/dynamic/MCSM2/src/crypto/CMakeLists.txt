@@ -1,0 +1,1 @@
+target_sources(mcsm2 PRIVATE blowfish.cpp)

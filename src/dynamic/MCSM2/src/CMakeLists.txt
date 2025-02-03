@@ -1,0 +1,7 @@
+add_subdirectory(skeleton)
+add_subdirectory(d3dmesh)
+add_subdirectory(crypto)
+add_subdirectory(animation)
+add_subdirectory(texture)
+add_subdirectory(prop)
+target_sources(mcsm2 PRIVATE any.cpp)

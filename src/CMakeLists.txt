@@ -1,4 +1,5 @@
 add_subdirectory(stream)
-add_subdirectory(meta)
 add_subdirectory(core)
+add_subdirectory(dynamic)
+add_subdirectory(linalg)
 add_subdirectory(convert)
