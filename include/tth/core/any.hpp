@@ -6,19 +6,19 @@
 namespace TTH
 {
 
-template <typename T, typename = void> struct has_member_create_ : std::false_type
-{
-};
-
-template <typename T> struct has_member_create_<T, std::void_t<decltype(std::declval<T>().Create())>> : std::true_type
-{
-};
-
-// Helper variable template
-template <typename T> inline constexpr bool has_member_create_v_ = has_member_create_<T>::value;
-
 class Any
 {
+  private:
+    template <typename T, typename = void> struct has_member_create_ : std::false_type
+    {
+    };
+
+    template <typename T> struct has_member_create_<T, std::void_t<decltype(std::declval<T>().Create())>> : std::true_type
+    {
+    };
+
+    template <typename T> static inline constexpr bool has_member_create_v_ = has_member_create_<T>::value;
+
   public:
     explicit Any(uint64_t hash);
 
