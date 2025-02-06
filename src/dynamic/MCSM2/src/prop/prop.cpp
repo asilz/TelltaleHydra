@@ -129,7 +129,7 @@ class PropertySet::Impl
         ~TypeGroup() { delete[] pairs; }
     };
 
-    Impl() : mPropVersion(-1), mPropertyFlags(Flags()), mParents(DCArray<Handle<PropertySet>>()), mGroupCount(0), mGroups(nullptr) {}
+    Impl() : mPropVersion(-1), mPropertyFlags(Flags()), mParents(DCArray<Handle<PropertySet>>()), mGroupCount(0), mGroups(nullptr), mEditorProp() {}
     ~Impl()
     {
         delete[] mGroups;

@@ -240,7 +240,7 @@ class D3DMesh::Impl
                 ++descriptionsIndex;
             }
         }
-        return static_cast<const void *>(ptr + mMeshData.mVertexStates[0].mpVertexBuffer[bufferIndex].mStride * mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mMinVertIndex);
+        return static_cast<const void *>(ptr);
     }
     const void *GetIndices(GFXPlatformFormat &format, size_t LODIndex, size_t batchIndex) const noexcept
     {
@@ -250,7 +250,7 @@ class D3DMesh::Impl
             if (mMeshData.mVertexStates[0].mpIndexBuffer[i].mBufferUsage == 0x2)
             {
                 format = static_cast<GFXPlatformFormat>(mMeshData.mVertexStates[0].mpIndexBuffer[i].mBufferFormat);
-                return static_cast<const void *>(ptr + mMeshData.mLODs[LODIndex].mBatches[0][batchIndex].mStartIndex);
+                return static_cast<const void *>(ptr + mMeshData.mLODs[LODIndex].mBatches[1][batchIndex].mStartIndex);
             }
             ptr += mMeshData.mVertexStates[0].mpIndexBuffer[i].mStride * mMeshData.mVertexStates[0].mpIndexBuffer[i].mCount;
         }

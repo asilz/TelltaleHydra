@@ -18,6 +18,8 @@ class PropertySet
     errno_t Create();
     void Destroy();
 
+    PropertySet() { impl = nullptr; }
+
     static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("PropertySet"); }
     static constexpr bool IS_BLOCKED = true;
 };

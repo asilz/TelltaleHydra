@@ -72,6 +72,7 @@ class Skeleton
 
     static constexpr bool IS_BLOCKED = true;
 
+    Skeleton() { impl = nullptr; }
     errno_t Create();
     void Destroy();
 };
