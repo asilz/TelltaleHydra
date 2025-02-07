@@ -179,7 +179,6 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
         for (size_t bufferIndex = 0; bufferIndex < meshes[meshIndex].GetVertexBufferCount(); ++bufferIndex)
         {
             vertexBuffers[bufferIndex] = meshes[meshIndex].GetVertexBuffer(bufferIndex, 0, 0, descriptions[bufferIndex]);
-            1;
             for (unsigned int vertexIndex = 0; vertexIndex < scene.mMeshes[meshIndex]->mNumVertices; ++vertexIndex)
             {
                 uint8_t criteria = 0;
@@ -287,7 +286,6 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
 
         for (unsigned int i = 0; i < scene.mMeshes[meshIndex]->mNumVertices; ++i)
         {
-            printf("%d\n", blendIndices[i * 4]);
             vertexWeights[blendIndices[0 + i * 4]].emplace_back(i, blendWeights[0 + i * 4]);
             vertexWeights[blendIndices[1 + i * 4]].emplace_back(i, blendWeights[1 + i * 4]);
             vertexWeights[blendIndices[2 + i * 4]].emplace_back(i, blendWeights[2 + i * 4]);
