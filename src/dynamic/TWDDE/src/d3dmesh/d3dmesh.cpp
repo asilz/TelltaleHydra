@@ -264,7 +264,17 @@ class D3DMesh::Impl
     const Vector3 *GetPositionOffset() const noexcept { return &mMeshData.mPositionOffset; }
     uint64_t GetBoneName(size_t LODIndex, size_t boneIndex) const noexcept { return mMeshData.mLODs[0].mBones[boneIndex].mCRC64; }
     size_t GetBoneCount(size_t LODIndex) const noexcept { return mMeshData.mLODs[0].mBones.size(); }
-    size_t GetIndexCount() const noexcept { return mMeshData.mVertexStates[0].mpIndexBuffer[0].mCount; }
+    size_t GetIndexCount() const noexcept
+    {
+        for (uint32_t i = 0; i < mMeshData.mVertexStates[0].mIndexBufferCount; ++i)
+        {
+            if (mMeshData.mVertexStates[0].mpIndexBuffer[i].mBufferUsage == 0x2)
+            {
+                return mMeshData.mVertexStates[0].mpIndexBuffer[i].mCount;
+            }
+        }
+        return 0;
+    }
 };
 
 errno_t D3DMesh::Create()
