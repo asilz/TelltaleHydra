@@ -275,6 +275,11 @@ class D3DMesh::Impl
         }
         return 0;
     }
+    size_t GetAttributeCount() const noexcept { return mMeshData.mVertexStates[0].mAttributeCount; }
+    size_t GetVertexBufferSize(size_t bufferIndex) const noexcept
+    {
+        return mMeshData.mVertexStates[0].mpVertexBuffer[bufferIndex].mCount * mMeshData.mVertexStates[0].mpVertexBuffer[bufferIndex].mStride;
+    };
 };
 
 errno_t D3DMesh::Create()
@@ -307,4 +312,6 @@ const Vector3 *D3DMesh::GetPositionScale() const noexcept { return impl->GetPosi
 const Vector3 *D3DMesh::GetPositionOffset() const noexcept { return impl->GetPositionOffset(); }
 uint64_t D3DMesh::GetBoneName(size_t LODIndex, size_t boneIndex) const noexcept { return impl->GetBoneName(LODIndex, boneIndex); }
 size_t D3DMesh::GetBoneCount(size_t LODIndex) const noexcept { return impl->GetBoneCount(LODIndex); }
+size_t D3DMesh::GetAttributeCount() const noexcept { return impl->GetAttributeCount(); }
+size_t D3DMesh::GetVertexBufferSize(size_t bufferIndex) const noexcept { return impl->GetVertexBufferSize(bufferIndex); }
 }; // namespace TTH

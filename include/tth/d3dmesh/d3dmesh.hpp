@@ -76,6 +76,23 @@ class D3DMesh
         eGFXPlatformAttribute_None = 0xffffffff
     };
 
+    enum eGFXPlatformBufferUsage
+    {
+        eGFXPlatformBuffer_None = 0x0,
+        eGFXPlatformBuffer_Vertex = 0x1,
+        eGFXPlatformBuffer_Index = 0x2,
+        eGFXPlatformBuffer_Uniform = 0x4,
+        eGFXPlatformBuffer_ShaderRead = 0x8,
+        eGFXPlatformBuffer_ShaderWrite = 0x10,
+        eGFXPlatformBuffer_ShaderReadWrite = 0x18,
+        eGFXPlatformBuffer_ShaderRawAccess = 0x20,
+        eGFXPlatformBuffer_ShaderReadRaw = 0x28,
+        eGFXPlatformBuffer_ShaderWriteRaw = 0x30,
+        eGFXPlatformBuffer_ShaderReadWriteRaw = 0x38,
+        eGFXPlatformBuffer_DrawIndirectArgs = 0x40,
+        eGFXPlatformBuffer_SingleValue = 0x80
+    };
+
     int32_t Read(Stream &stream) noexcept;
     int32_t Write(Stream &stream) const noexcept;
 
@@ -123,6 +140,20 @@ class D3DMesh
      * @return Vertex buffer count
      */
     size_t GetVertexBufferCount() const noexcept;
+
+    /**
+     * @brief Retrieves the size of a vertex byte
+     *
+     * @return Vertex buffer size in bytes
+     */
+    size_t GetVertexBufferSize(size_t bufferIndex) const noexcept;
+
+    /**
+     * @brief Retrieves the number of attributes in the entire d3dmesh
+     *
+     * @return Attribute count
+     */
+    size_t GetAttributeCount() const noexcept;
 
     /**
      * @brief Retrieves the number of attributes in a vertex buffer

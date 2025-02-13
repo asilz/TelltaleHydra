@@ -70,6 +70,7 @@ class Symbol
 
     bool operator<(const Symbol &rhs) const { return this->mCRC64 < rhs.mCRC64; }
     bool operator>(const Symbol &rhs) const { return this->mCRC64 > rhs.mCRC64; }
+    bool operator==(const Symbol &rhs) const { return this->mCRC64 == rhs.mCRC64; }
 
     static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Symbol"); }
     static constexpr bool IS_BLOCKED = false;
