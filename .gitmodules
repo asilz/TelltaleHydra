@@ -1,3 +1,6 @@
 [submodule "extern/assimp"]
 	path = extern/assimp
 	url = git@github.com:assimp/assimp.git
+[submodule "extern/zlib"]
+	path = extern/zlib
+	url = git@github.com:madler/zlib.git
