@@ -7,6 +7,6 @@
 namespace TTH
 {
 
-errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animations, D3DMesh *meshes, size_t animationCount, size_t meshCount);
+errno_t ExportAsset(const char *resultPath, Skeleton skeleton, const Animation *animations, const D3DMesh *meshes, size_t animationCount, size_t meshCount);
 
 };

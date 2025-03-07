@@ -12,7 +12,7 @@ template <class T, size_t N> class SArray
 
   public:
     static constexpr bool IS_BLOCKED = true;
-    int32_t Read(Stream &stream) // TODO: is this wrong?
+    int32_t Read(Stream &stream)
     {
         int32_t size = 0;
         for (size_t i = 0; i < N; ++i)

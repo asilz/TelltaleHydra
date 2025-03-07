@@ -1,4 +1,4 @@
-#include <d3dmesh.hpp>
+#include <d3dmesh/d3dmesh.hpp>
 #include <tth/container/dcarray.hpp>
 #include <tth/core/any.hpp>
 #include <tth/flags.hpp>

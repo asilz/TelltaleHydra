@@ -24,8 +24,8 @@ class Flags
 template <size_t N> class BitSetBase
 {
   public:
-    int32_t Read(Stream &stream) { return stream.Read((void *)(mWords), sizeof(mWords)); }
-    int32_t Write(Stream &stream) const { return stream.Write((const void *)(mWords), sizeof(mWords)); }
+    int32_t Read(Stream &stream) { return stream.Read(static_cast<void *>(mWords), sizeof(mWords)); }
+    int32_t Write(Stream &stream) const { return stream.Write(static_cast<const void *>(mWords), sizeof(mWords)); }
     uint32_t mWords[N];
     static constexpr bool IS_BLOCKED = true;
 };

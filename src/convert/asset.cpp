@@ -30,7 +30,7 @@ static errno_t GetGlobalMatrix(aiMatrix4x4 &result, const aiNode &node)
     return 0;
 }
 
-errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animation, D3DMesh *meshes, size_t animationCount, size_t meshCount)
+errno_t ExportAsset(const char *resultPath, Skeleton skeleton, const Animation *animation, const D3DMesh *meshes, size_t animationCount, size_t meshCount)
 {
     aiLogStream stream;
     stream.callback = LogCallback;
@@ -123,6 +123,8 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
                 scene.mAnimations[animationIndex]->mChannels[i]->mRotationKeys[j].mValue.z = rotations[i].mSamples[j].mValue.z;
                 scene.mAnimations[animationIndex]->mChannels[i]->mRotationKeys[j].mValue.w = rotations[i].mSamples[j].mValue.w;
             }
+            printf("Assimp translation %lX [%f, %f, %f]\n", boneNames[i].mCRC64, scene.mAnimations[animationIndex]->mChannels[i]->mPositionKeys[0].mValue.x,
+                   scene.mAnimations[animationIndex]->mChannels[i]->mPositionKeys[0].mValue.y, scene.mAnimations[animationIndex]->mChannels[i]->mPositionKeys[0].mValue.z);
         }
 
         delete[] translations;
@@ -171,7 +173,7 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
         scene.mMeshes[meshIndex]->mNormals = new aiVector3D[scene.mMeshes[meshIndex]->mNumVertices];
         scene.mMeshes[meshIndex]->mTangents = new aiVector3D[scene.mMeshes[meshIndex]->mNumVertices];
 
-        std::vector<std::vector<aiVertexWeight>> vertexWeights(scene.mMeshes[meshIndex]->mNumBones);
+        std::vector<std::vector<aiVertexWeight>> vertexWeights(scene.mMeshes[meshIndex]->mNumBones); // TODO: This causes cache misses, is there a way to fix it?
 
         float *blendWeights = new float[scene.mMeshes[meshIndex]->mNumVertices * 4];
         uint8_t *blendIndices = new uint8_t[scene.mMeshes[meshIndex]->mNumVertices * 4];
@@ -181,7 +183,6 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
             vertexBuffers[bufferIndex] = meshes[meshIndex].GetVertexBuffer(bufferIndex, 0, 0, descriptions[bufferIndex]);
             for (unsigned int vertexIndex = 0; vertexIndex < scene.mMeshes[meshIndex]->mNumVertices; ++vertexIndex)
             {
-                uint8_t criteria = 0;
                 for (size_t attributeIndex = 0; attributeIndex < meshes[meshIndex].GetVertexBufferAttributeCount(bufferIndex); ++attributeIndex)
                 {
 
@@ -190,11 +191,11 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
 
                         if (descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN16x4)
                         {
-                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].x = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].x = *(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f;
                             vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
-                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].y = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].y = *(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f;
                             vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
-                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].z = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            scene.mMeshes[meshIndex]->mVertices[vertexIndex].z = *(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f;
                             vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 2);
                         }
                         else if (descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_F32x3)
@@ -245,20 +246,19 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
                         assert(descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_U8x4);
                         memcpy(blendIndices + vertexIndex * 4, vertexBuffers[bufferIndex], 4 * sizeof(*blendIndices));
                         vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint8_t *>(vertexBuffers[bufferIndex]) + 4);
-                        ++criteria;
                     }
 
                     if (descriptions[bufferIndex][attributeIndex].attribute == D3DMesh::GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendWeight)
                     {
                         if (descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN16x4)
                         {
-                            blendWeights[0 + vertexIndex * 4] = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            blendWeights[0 + vertexIndex * 4] = *(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f;
                             vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
-                            blendWeights[1 + vertexIndex * 4] = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            blendWeights[1 + vertexIndex * 4] = *(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f;
                             vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
-                            blendWeights[2 + vertexIndex * 4] = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            blendWeights[2 + vertexIndex * 4] = *(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f;
                             vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
-                            blendWeights[3 + vertexIndex * 4] = (*(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f);
+                            blendWeights[3 + vertexIndex * 4] = *(static_cast<const uint16_t *>(vertexBuffers[bufferIndex])) / 65535.0f;
                             vertexBuffers[bufferIndex] = static_cast<const void *>(static_cast<const uint16_t *>(vertexBuffers[bufferIndex]) + 1);
                         }
                         else if (descriptions[bufferIndex][attributeIndex].format == D3DMesh::GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
@@ -274,11 +274,6 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
                         {
                             assert(0);
                         }
-                    }
-                    if (criteria == 2)
-                    {
-
-                        criteria = 3;
                     }
                 }
             }
@@ -304,6 +299,14 @@ errno_t ExportAsset(const char *resultPath, Skeleton skeleton, Animation *animat
 
             scene.mMeshes[meshIndex]->mBones[i]->mNode = scene.mRootNode->FindNode(scene.mMeshes[meshIndex]->mBones[i]->mName);
             GetGlobalMatrix(scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix, *scene.mMeshes[meshIndex]->mBones[i]->mNode);
+
+            printf("---------- \nAssimp offset matrix %lX\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n", meshes[meshIndex].GetBoneName(0, i),
+                   scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[0][0], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[0][1], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[0][2],
+                   scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[0][3], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[1][0], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[1][1],
+                   scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[1][2], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[1][3], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[2][0],
+                   scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[2][1], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[2][2], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[2][3],
+                   scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[3][0], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[3][1], scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[3][2],
+                   scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix[3][3]);
             aiMatrix4Inverse(&scene.mMeshes[meshIndex]->mBones[i]->mOffsetMatrix);
 
             /* Due to inaccuracy in matrix functions, we need to set the matrix values to an accurate value */

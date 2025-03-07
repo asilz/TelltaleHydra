@@ -1,5 +1,5 @@
 #include <cassert>
-#include <d3dmesh.hpp>
+#include <d3dmesh/d3dmesh.hpp>
 #include <tth/animation/animation.hpp>
 #include <tth/container/dcarray.hpp>
 #include <tth/container/map.hpp>

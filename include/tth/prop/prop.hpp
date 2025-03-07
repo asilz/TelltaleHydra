@@ -9,7 +9,7 @@ class PropertySet
 {
   private:
     class Impl;
-    Impl *impl;
+    Impl *impl = nullptr;
 
   public:
     int32_t Read(Stream &stream) noexcept;
@@ -17,8 +17,6 @@ class PropertySet
 
     errno_t Create();
     void Destroy();
-
-    PropertySet() { impl = nullptr; }
 
     static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("PropertySet"); }
     static constexpr bool IS_BLOCKED = true;

@@ -11,7 +11,7 @@ class Skeleton
 {
   private:
     class Impl;
-    Impl *impl;
+    Impl *impl = nullptr;
 
   public:
     int32_t Read(Stream &stream) noexcept;
@@ -72,7 +72,6 @@ class Skeleton
 
     static constexpr bool IS_BLOCKED = true;
 
-    Skeleton() { impl = nullptr; }
     errno_t Create();
     void Destroy();
 };

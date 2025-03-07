@@ -18,7 +18,7 @@ class String : public std::string
             return err;
         }
         this->resize(size);
-        err = stream.Read(this->data(), size);
+        err = stream.Read(static_cast<void *>(this->data()), size);
         if (err < 0)
         {
             return err;
@@ -36,7 +36,7 @@ class String : public std::string
         }
         size += err;
 
-        err = stream.Write((const void *)(this->data()), size - sizeof(int32_t));
+        err = stream.Write(static_cast<const void *>(this->data()), size - sizeof(int32_t));
         if (err < 0)
         {
             return err;

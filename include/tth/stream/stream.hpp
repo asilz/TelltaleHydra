@@ -34,7 +34,7 @@ class Stream
             return obj.T::Read(*this);
         }
 
-        return Read((void *)&obj, sizeof(obj));
+        return Read(static_cast<void *>(&obj), sizeof(obj));
     }
 
     template <class T> int32_t WriteBase(const T &obj)
@@ -61,7 +61,7 @@ class Stream
             }
             return size;
         }
-        return Write((const void *)&obj, sizeof(obj));
+        return Write(static_cast<const void *>(&obj), sizeof(obj));
     }
 
     template <class T> int32_t Read(T &obj)
@@ -75,7 +75,7 @@ class Stream
             return obj.Read(*this);
         }
 
-        return Read((void *)&obj, sizeof(obj));
+        return Read(static_cast<void *>(&obj), sizeof(obj));
     }
 
     template <class T> int32_t Write(const T &obj)
@@ -102,7 +102,7 @@ class Stream
             }
             return size;
         }
-        return Write((const void *)&obj, sizeof(obj));
+        return Write(static_cast<const void *>(&obj), sizeof(obj));
     }
 
     template <class T> int32_t Read(T &obj, bool blocked)
@@ -116,7 +116,7 @@ class Stream
             return obj.Read(*this);
         }
 
-        return Read((void *)&obj, sizeof(obj));
+        return Read(static_cast<void *>(&obj), sizeof(obj));
     }
 
     template <class T> int32_t Write(const T &obj, bool blocked)
@@ -137,7 +137,7 @@ class Stream
         }
         else
         {
-            size += Write((const void *)&obj, sizeof(obj));
+            size += Write(static_cast<const void *>(&obj), sizeof(obj));
         }
         if (blocked)
         {

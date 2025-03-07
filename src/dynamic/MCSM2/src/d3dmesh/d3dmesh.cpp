@@ -1,4 +1,4 @@
-#include <d3dmesh.hpp>
+#include <d3dmesh/d3dmesh.hpp>
 
 namespace TTH
 {
@@ -101,7 +101,7 @@ class D3DMesh::Impl
         stream.Seek(startOfAsync, stream.SET);
 
         this->async = new uint8_t[this->asyncSize];
-        size += stream.Read((void *)async, this->asyncSize);
+        size += stream.Read(static_cast<void *>(async), this->asyncSize);
 
         return size;
     }

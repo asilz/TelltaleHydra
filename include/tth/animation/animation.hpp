@@ -14,7 +14,7 @@ class Animation
 {
   private:
     class Impl;
-    Impl *impl;
+    Impl *impl = nullptr;
 
   public:
     int32_t Read(Stream &stream);
@@ -25,7 +25,7 @@ class Animation
      *
      * @return duration of the animation
      */
-    float GetDuration() const;
+    float GetDuration() const noexcept;
 
     /**
      * @brief Retrieves the number of frames for a specific bone
@@ -33,37 +33,37 @@ class Animation
      * @param boneCRC hash that indicates the bone to retrieve the keyframe count for
      * @return Keyframe count
      */
-    size_t GetKeyframeCount(Symbol boneCRC) const;
+    size_t GetKeyframeCount(Symbol boneCRC) const noexcept;
 
     /**
      * @brief Retrieves the number of bones that the animation affects
      *
      * @return Bone count
      */
-    size_t GetBoneCount() const;
+    size_t GetBoneCount() const noexcept;
 
     /**
      * @brief Retrieves the CRC64 of all the bones in the animation
      *
      * @return Pointer to bone symbols
      */
-    const Symbol *GetBonesCRC64() const;
+    const Symbol *GetBonesCRC64() const noexcept;
 
     /**
-     * @brief Retrieves the keyframes of a specific bone
+     * @brief Retrieves the keyframes of all bones
      *
      * @param translation array with size equal to the bone count that will be filled keyframes
      * @param rotations array with size equal to the bone count that will be filled keyframes
      * @return 0 on success, negative error code on failure
      */
-    errno_t GetKeyframes(KeyframedValue<Vector3> *translation, KeyframedValue<Quaternion> *rotations) const;
+    errno_t GetKeyframes(KeyframedValue<Vector3> *translation, KeyframedValue<Quaternion> *rotations) const noexcept;
 
     /**
      * @brief Retrieves the version CRC32 of the animation
      *
      * @return CRC32
      */
-    uint32_t GetVersionCRC32() const;
+    uint32_t GetVersionCRC32() const noexcept;
 
     /**
      * @brief Retrieves the type CRC64 of this datatype

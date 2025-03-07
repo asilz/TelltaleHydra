@@ -12,7 +12,7 @@ class D3DMesh
 {
   private:
     class Impl;
-    Impl *impl;
+    Impl *impl = nullptr;
 
   public:
     enum GFXPlatformFormat
@@ -340,7 +340,6 @@ class D3DMesh
 
     static constexpr bool IS_BLOCKED = true;
 
-    D3DMesh() { impl = nullptr; }
     errno_t Create();
     void Destroy();
 };

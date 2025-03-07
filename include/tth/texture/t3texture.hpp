@@ -9,14 +9,16 @@ class T3Texture
 {
   private:
     class Impl;
-    Impl *impl;
+    Impl *impl = nullptr;
 
   public:
     int32_t Read(Stream &stream);
     int32_t Write(Stream &stream) const;
 
-    T3Texture() { impl = nullptr; }
     static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3Texture"); }
     static constexpr bool IS_BLOCKED = true;
+
+    errno_t Create();
+    void Destroy();
 };
 }; // namespace TTH

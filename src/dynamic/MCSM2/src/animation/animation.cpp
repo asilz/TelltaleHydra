@@ -81,11 +81,11 @@ class Animation::Impl
     Symbol *mInterfaceSymbols;
 
   public:
-    float GetDuration() const { return mLength; }
+    float GetDuration() const noexcept { return mLength; }
 
-    size_t GetKeyframeCount(Symbol boneCRC) const { return 0; }
+    size_t GetKeyframeCount(Symbol boneCRC) const noexcept { return 0; }
 
-    size_t GetBoneCount() const
+    size_t GetBoneCount() const noexcept
     {
         const CompressedSkeletonPoseKeys2 *cspk = nullptr;
         for (int32_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
@@ -99,7 +99,7 @@ class Animation::Impl
         return (reinterpret_cast<const CompressedSkeletonPoseKeys2::Header *>(cspk->mpData))->mBoneCount;
     };
 
-    const Symbol *GetBonesCRC64() const
+    const Symbol *GetBonesCRC64() const noexcept
     {
         CompressedSkeletonPoseKeys2 *cspk = nullptr;
         for (int32_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
@@ -114,7 +114,7 @@ class Animation::Impl
                                                 (reinterpret_cast<const CompressedSkeletonPoseKeys2::Header *>(cspk->mpData))->mSampleDataSize);
     };
 
-    errno_t GetKeyframes(KeyframedValue<Vector3> *translations, KeyframedValue<Quaternion> *rotations) const
+    errno_t GetKeyframes(KeyframedValue<Vector3> *translations, KeyframedValue<Quaternion> *rotations) const noexcept
     {
         CompressedSkeletonPoseKeys2 *cspk = nullptr;
         for (int32_t i = 0; i < mInterfaceCount && cspk == nullptr; ++i)
@@ -422,12 +422,12 @@ class Animation::Impl
     }
 };
 
-float Animation::GetDuration() const { return impl->GetDuration(); }
-size_t Animation::GetKeyframeCount(Symbol boneCRC) const { return impl->GetKeyframeCount(boneCRC); }
-size_t Animation::GetBoneCount() const { return impl->GetBoneCount(); };
-const Symbol *Animation::GetBonesCRC64() const { return impl->GetBonesCRC64(); };
-errno_t Animation::GetKeyframes(KeyframedValue<Vector3> *translations, KeyframedValue<Quaternion> *rotations) const { return impl->GetKeyframes(translations, rotations); };
-uint32_t Animation::GetVersionCRC32() const { return 0; };
+float Animation::GetDuration() const noexcept { return impl->GetDuration(); }
+size_t Animation::GetKeyframeCount(Symbol boneCRC) const noexcept { return impl->GetKeyframeCount(boneCRC); }
+size_t Animation::GetBoneCount() const noexcept { return impl->GetBoneCount(); };
+const Symbol *Animation::GetBonesCRC64() const noexcept { return impl->GetBonesCRC64(); };
+errno_t Animation::GetKeyframes(KeyframedValue<Vector3> *translations, KeyframedValue<Quaternion> *rotations) const noexcept { return impl->GetKeyframes(translations, rotations); };
+uint32_t Animation::GetVersionCRC32() const noexcept { return 0; };
 int32_t Animation::Read(Stream &stream) { return impl->Read(stream); }
 int32_t Animation::Write(Stream &stream) const { return impl->Write(stream); }
 
