@@ -1,11 +1,13 @@
 #pragma once
 
+#include <string>
 #include <tth/container/dcarray.hpp>
 #include <tth/crypto/crc64.hpp>
 #include <tth/flags.hpp>
 #include <tth/linalg/transform.hpp>
 #include <tth/linalg/vector.hpp>
 #include <tth/stream/stream.hpp>
+#include <typeinfo>
 
 namespace TTH
 {
@@ -57,6 +59,9 @@ class AnimationValueInterfaceBase
         return size;
     }
 
+    virtual size_t GetBoneCount() const { return 0; };
+    const Symbol *GetBonesCRC64() const { return nullptr; }
+
     static constexpr bool IS_BLOCKED = true;
 };
 
@@ -74,7 +79,7 @@ template <class T> class AnimatedValueInterface : public AnimationValueInterface
     virtual int32_t Write(Stream &stream) const
     {
         const AnimationValueInterfaceBase *base = this;
-        return stream.Write(*base);
+        return stream.WriteBase(*base);
     }
 
     static constexpr bool IS_BLOCKED = true;
@@ -104,6 +109,15 @@ template <class T> class KeyframedValue : public AnimatedValueInterface<T>
 
         Sample(float time, bool interpolateToNextKey, int32_t tangentMode, const T &value) : mTime(time), mbInterpolateToNextKey(interpolateToNextKey), mTangentMode(tangentMode), mValue(value) {}
         Sample() : mTime(0.0f), mbInterpolateToNextKey(false), mTangentMode(0) {}
+
+        enum TangentModes
+        {
+            eTangentUnknown = 0,
+            eTangentStepped,
+            eTangentKnot,
+            eTangentSmooth,
+            eTangentFlat
+        };
 
         float mTime;
         bool mbInterpolateToNextKey;
@@ -146,7 +160,7 @@ template <class T> class KeyframedValue : public AnimatedValueInterface<T>
     {
         int32_t size = 0;
         const AnimatedValueInterface<T> *interface = this;
-        int32_t err = stream.Write(interface);
+        int32_t err = stream.WriteBase(interface);
         if (err < 0)
         {
             return err;
