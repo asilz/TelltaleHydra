@@ -52,7 +52,7 @@ class Sphere
     class Vector3 mCenter;
     float mRadius;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Sphere"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("Sphere", crc); }
 };
 class BoundingBox
 {
@@ -96,7 +96,7 @@ class BoundingBox
     class Vector3 mMin;
     class Vector3 mMax;
     static constexpr bool IS_BLOCKED = false;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("BoundingBox"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("BoundingBox", crc); }
 };
 
 struct T3MeshTexture
@@ -218,7 +218,7 @@ struct T3MeshTexture
     float mMaxObjAreaPerUVArea;
     float mAverageObjAreaPerUVArea;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshTexture"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshTexture", crc); }
 };
 
 struct T3MeshMaterialOverride
@@ -264,7 +264,7 @@ struct T3MeshMaterialOverride
     Handle<PropertySet> mhOverrideMaterial;
     uint32_t mMaterialIndex;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshMaterialOverride"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshMaterialOverride", crc); }
 };
 
 struct T3MaterialTextureParam
@@ -338,7 +338,7 @@ struct T3MaterialTextureParam
     uint32_t mFlags; // Why are these not Flags?
     int32_t mScalarOffset;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialTextureParam"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialTextureParam", crc); }
 };
 
 struct T3MeshLocalTransformEntry
@@ -386,7 +386,7 @@ struct T3MeshLocalTransformEntry
     Transform mTransform;
     int32_t mCameraFacingType;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshLocalTransformEntry"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshLocalTransformEntry", crc); }
 };
 
 struct T3MaterialNestedMaterial
@@ -397,7 +397,7 @@ struct T3MaterialNestedMaterial
 
     Handle<PropertySet> mhMaterial; // TODO: Change to Handle<PropertySet>
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialNestedMaterial"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialNestedMaterial", crc); }
 };
 
 struct T3MeshTextureIndices
@@ -440,7 +440,7 @@ struct T3MeshTextureIndices
 
     int32_t mIndex[2];
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshTextureIndices"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshTextureIndices", crc); }
 };
 
 class BinaryBuffer
@@ -493,7 +493,7 @@ class BinaryBuffer
     ~BinaryBuffer() { delete[] data; }
     BinaryBuffer() : mDataSize(0), data(nullptr) {}
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("BinaryBuffer"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("BinaryBuffer", crc); }
 };
 
 struct T3MaterialData
@@ -629,7 +629,7 @@ struct T3MaterialData
     int32_t mVersion;
     class DCArray<struct T3MaterialCompiledData> mCompiledData2;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialData"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialData", crc); }
 };
 struct T3MaterialPassData
 {
@@ -686,7 +686,7 @@ struct T3MaterialPassData
     int32_t mBlendMode;
     uint64_t mMaterialCrc;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialPassData"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialPassData", crc); }
 };
 struct T3MaterialPreShader
 {
@@ -756,7 +756,7 @@ struct T3MaterialPreShader
     int32_t mPreShaderOffset;
     int32_t mScalarParameterOffset;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialPreShader"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialPreShader", crc); }
 };
 struct T3MaterialTransform2D
 {
@@ -865,7 +865,7 @@ struct T3MaterialTransform2D
     int32_t mPreShaderScalarOffset1;
     int32_t mNestedMaterialIndex;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialTransform2D"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialTransform2D", crc); }
 };
 struct T3MaterialParameter
 {
@@ -974,7 +974,7 @@ struct T3MaterialParameter
     int32_t mPreShaderScalarOffset;
     int32_t mNestedMaterialIndex;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialParameter"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialParameter", crc); }
 };
 struct T3MaterialCompiledData
 {
@@ -1251,7 +1251,7 @@ struct T3MaterialCompiledData
     uint32_t mParameterBufferScalarSize[2];
     uint32_t mPreShaderParameterBufferScalarSize;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialCompiledData"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialCompiledData", crc); }
 };
 struct T3MaterialRuntimeProperty
 {
@@ -1295,64 +1295,7 @@ struct T3MaterialRuntimeProperty
     class Symbol mName;
     class Symbol mRuntimeName;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialRuntimeProperty"); }
-};
-class LocationInfo
-{
-  public:
-    int32_t Read(Stream &stream)
-    {
-        int32_t size = 0;
-        int32_t err;
-        err = stream.Read(mAttachmentAgent);
-        if (err < 0)
-        {
-            return err;
-        }
-        size += err;
-        err = stream.Read(mAttachmentNode);
-        if (err < 0)
-        {
-            return err;
-        }
-        size += err;
-        err = stream.Read(mInitialLocalTransform);
-        if (err < 0)
-        {
-            return err;
-        }
-        size += err;
-        return size;
-    }
-    int32_t Write(Stream &stream) const
-    {
-        int32_t size = 0;
-        int32_t err;
-        err = stream.Write(mAttachmentAgent);
-        if (err < 0)
-        {
-            return err;
-        }
-        size += err;
-        err = stream.Write(mAttachmentNode);
-        if (err < 0)
-        {
-            return err;
-        }
-        size += err;
-        err = stream.Write(mInitialLocalTransform);
-        if (err < 0)
-        {
-            return err;
-        }
-        size += err;
-        return size;
-    }
-    class String mAttachmentAgent;
-    class Symbol mAttachmentNode;
-    class Transform mInitialLocalTransform;
-    static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("LocationInfo"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialRuntimeProperty", crc); }
 };
 struct T3MaterialEnlightenPrecomputeParams
 {
@@ -1396,7 +1339,7 @@ struct T3MaterialEnlightenPrecomputeParams
     float mIndirectReflectivity;
     float mIndirectTransparency;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialEnlightenPrecomputeParams"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialEnlightenPrecomputeParams", crc); }
 };
 struct T3GFXBuffer
 {
@@ -1479,7 +1422,7 @@ struct T3GFXBuffer
     uint32_t mCount;
     uint32_t mStride;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3GFXBuffer"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3GFXBuffer", crc); }
 };
 struct GFXPlatformAttributeParams
 {
@@ -1562,7 +1505,7 @@ struct GFXPlatformAttributeParams
     uint32_t mBufferIndex;
     uint32_t mBufferOffset;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("GFXPlatformAttributeParams"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("GFXPlatformAttributeParams", crc); }
 };
 struct T3GFXVertexState
 {
@@ -1695,7 +1638,7 @@ struct T3GFXVertexState
     GFXPlatformAttributeParams mAttributes[32];
 
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3GFXVertexState"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3GFXVertexState", crc); }
 };
 struct T3MeshEffectPreloadDynamicFeatures
 {
@@ -1739,7 +1682,7 @@ struct T3MeshEffectPreloadDynamicFeatures
     class BitSetBase<1> mDynamicFeatures;
     int32_t mPriority;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshEffectPreloadDynamicFeatures"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshEffectPreloadDynamicFeatures", crc); }
 };
 struct T3MeshEffectPreloadEntry
 {
@@ -1809,7 +1752,7 @@ struct T3MeshEffectPreloadEntry
     uint64_t mMaterialCRC;
     class DCArray<struct T3MeshEffectPreloadDynamicFeatures> mDynamicEffectFeatures;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshEffectPreloadEntry"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshEffectPreloadEntry", crc); }
 };
 struct T3MeshEffectPreload
 {
@@ -1866,7 +1809,7 @@ struct T3MeshEffectPreload
     class DCArray<struct T3MeshEffectPreloadEntry> mEntries;
     uint32_t mTotalEffectCount;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshEffectPreload"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshEffectPreload", crc); }
 };
 struct T3MaterialRequirements
 {
@@ -1923,7 +1866,7 @@ struct T3MaterialRequirements
     class BitSetBase<2> mChannels;
     class BitSetBase<3> mInputs;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialRequirements"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialRequirements", crc); }
 };
 struct T3MeshMaterial
 {
@@ -2019,7 +1962,7 @@ struct T3MeshMaterial
     class Sphere mBoundingSphere;
     class Flags mFlags;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshMaterial"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshMaterial", crc); }
 };
 struct T3MeshBoneEntry
 {
@@ -2089,7 +2032,7 @@ struct T3MeshBoneEntry
     class Sphere mBoundingSphere;
     int32_t mNumVerts;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshBoneEntry"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshBoneEntry", crc); }
 };
 
 struct T3MeshBatch
@@ -2264,7 +2207,7 @@ struct T3MeshBatch
     int32_t mMaterialIndex;
     uint32_t mAdjacencyStartIndex;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshBatch"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshBatch", crc); }
 };
 struct T3MeshLOD
 {
@@ -2489,7 +2432,7 @@ struct T3MeshLOD
     float mDistance;
     class DCArray<class Symbol> mBones;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshLOD"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshLOD", crc); }
 };
 struct T3MeshTexCoordTransform
 {
@@ -2684,7 +2627,7 @@ struct T3MeshCPUSkinningData
     uint32_t mWeightSize;
     BinaryBuffer mData;
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshCPUSkinningData"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshCPUSkinningData", crc); }
     static constexpr bool IS_BLOCKED = true;
 };
 struct T3MeshData
@@ -3009,7 +2952,7 @@ struct T3MeshData
     DCArray<T3GFXVertexState> mVertexStates;
 
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MeshData"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshData", crc); }
 };
 struct T3MaterialStaticParameter
 {
@@ -3053,7 +2996,7 @@ struct T3MaterialStaticParameter
     class Symbol mName;
     int32_t mNestedMaterialIndex;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialStaticParameter"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialStaticParameter", crc); }
 };
 struct T3MaterialTexture
 {
@@ -3201,7 +3144,7 @@ struct T3MaterialTexture
     int32_t mTextureIndex;
     int32_t mNestedMaterialIndex;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3MaterialTexture"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MaterialTexture", crc); }
 };
 struct T3OcclusionMeshBatch
 {
@@ -3259,7 +3202,7 @@ struct T3OcclusionMeshBatch
     uint32_t mStartIndex;
     uint32_t mNumTriangles;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3OcclusionMeshBatch"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3OcclusionMeshBatch", crc); }
 };
 struct T3OcclusionMeshData
 {
@@ -3342,6 +3285,6 @@ struct T3OcclusionMeshData
     class DCArray<struct T3OcclusionMeshBatch> mBatches;
     uint32_t mVertexCount;
     static constexpr bool IS_BLOCKED = false;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3OcclusionMeshData"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3OcclusionMeshData", crc); }
 };
 }; // namespace TTH

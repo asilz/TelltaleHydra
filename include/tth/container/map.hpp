@@ -38,5 +38,7 @@ template <class Key, class Value, class Compare = std ::less<Key>> class Map : p
         }
         return size;
     }
+
+    // static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive(">", Key::GetTypeCRC64(CRC64_CaseInsensitive("Map<"))); }
 };
 } // namespace TTH

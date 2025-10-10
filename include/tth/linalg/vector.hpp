@@ -16,7 +16,7 @@ class Vector4
     int32_t Read(Stream &stream);
     int32_t Write(Stream &stream) const;
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Vector4"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("Vector4", crc); }
     static constexpr bool IS_BLOCKED = false;
 };
 class Vector3
@@ -29,7 +29,7 @@ class Vector3
     int32_t Read(Stream &stream);
     int32_t Write(Stream &stream) const;
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Vector3"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("Vector3", crc); }
     static constexpr bool IS_BLOCKED = false;
 };
 class Vector2
@@ -41,7 +41,7 @@ class Vector2
     int32_t Read(Stream &stream);
     int32_t Write(Stream &stream) const;
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Vector2"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("Vector2", crc); }
     static constexpr bool IS_BLOCKED = false;
 };
 }; // namespace TTH

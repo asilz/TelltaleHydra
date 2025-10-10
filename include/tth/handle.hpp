@@ -51,7 +51,7 @@ class HandleBase
     Symbol symbol;
     int64_t a8;
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("HandleBase"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("HandleBase", crc); }
     static constexpr bool IS_BLOCKED = false;
 };
 

@@ -336,7 +336,7 @@ class D3DMesh
      *
      * @return CRC64
      */
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("D3DMesh"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("D3DMesh", crc); }
 
     static constexpr bool IS_BLOCKED = true;
 

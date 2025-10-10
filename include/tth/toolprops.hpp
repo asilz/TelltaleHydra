@@ -17,7 +17,7 @@ class ToolProps
     ToolProps(bool hasProps) : mbHasProps(hasProps) {}
     ToolProps() : mbHasProps(false) {}
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("ToolProps"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("ToolProps", crc); }
     static constexpr bool IS_BLOCKED = false;
 };
 }; // namespace TTH

@@ -179,12 +179,20 @@ template <class T> class KeyframedValue : public AnimatedValueInterface<T>
     DCArray<Sample> mSamples;
 
     KeyframedValue() : mSamples(0) {}
-    static constexpr uint64_t GetTypeCRC64() { return 0; }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive(">", T::GetTypeCRC64(CRC64_CaseInsensitive("KeyframedValue<"))); }
     static constexpr bool IS_BLOCKED = true;
 };
 
-template <> constexpr uint64_t KeyframedValue<Transform>::GetTypeCRC64() { return CRC64_CaseInsensitive("KeyframedValue<Transform>"); }
-template <> constexpr uint64_t KeyframedValue<bool>::GetTypeCRC64() { return CRC64_CaseInsensitive("KeyframedValue<bool>"); }
-template <> constexpr uint64_t KeyframedValue<float>::GetTypeCRC64() { return CRC64_CaseInsensitive("KeyframedValue<float>"); }
+template <> constexpr uint64_t KeyframedValue<bool>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<bool>"); }
+template <> constexpr uint64_t KeyframedValue<float>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<float>"); }
+template <> constexpr uint64_t KeyframedValue<double>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<double>"); }
+template <> constexpr uint64_t KeyframedValue<char>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<char>"); }
+template <> constexpr uint64_t KeyframedValue<short>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<short>"); }
+template <> constexpr uint64_t KeyframedValue<int>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<int>"); }
+template <> constexpr uint64_t KeyframedValue<long>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<long>"); }
+template <> constexpr uint64_t KeyframedValue<unsigned char>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<unsignedchar>"); }
+template <> constexpr uint64_t KeyframedValue<unsigned short>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<unsignedshort>"); }
+template <> constexpr uint64_t KeyframedValue<unsigned int>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<unsignedint>"); }
+template <> constexpr uint64_t KeyframedValue<unsigned long>::GetTypeCRC64(uint64_t crc) { return CRC64_CaseInsensitive("KeyframedValue<unsignedlong>"); }
 
 }; // namespace TTH

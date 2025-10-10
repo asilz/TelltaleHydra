@@ -57,18 +57,13 @@ class Skeleton
     size_t GetBoneCount() const noexcept;
 
     /**
-     * @brief Retrieves the version CRC32 of the animation
-     *
-     * @return CRC32
-     */
-    uint32_t GetVersionCRC32() const noexcept;
-
-    /**
      * @brief Retrieves the type CRC64 of this datatype
      *
      * @return CRC64
      */
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Skeleton"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("Skeleton", crc); }
+
+    bool IsNull() const { return impl == nullptr; }
 
     static constexpr bool IS_BLOCKED = true;
 

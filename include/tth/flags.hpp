@@ -17,7 +17,7 @@ class Flags
     Flags(uint32_t flags) : mFlags(flags) {}
     Flags() : mFlags(0) {}
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Flags"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("Flags", crc); }
     static constexpr bool IS_BLOCKED = false;
 };
 

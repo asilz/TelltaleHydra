@@ -30,7 +30,7 @@ class Color
         return size;
     }
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Color"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("Color", crc); }
     static constexpr bool IS_BLOCKED = false;
 };
 }; // namespace TTH

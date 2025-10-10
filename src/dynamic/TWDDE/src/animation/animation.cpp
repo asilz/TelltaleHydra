@@ -4,9 +4,68 @@
 #include <math.h>
 #include <tth/animation/animation.hpp>
 #include <tth/flags.hpp>
+#include <tth/string.hpp>
 
 namespace TTH
 {
+
+class LocationInfo
+{
+  public:
+    int32_t Read(Stream &stream)
+    {
+        int32_t size = 0;
+        int32_t err;
+        err = stream.Read(mAttachmentAgent);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+        err = stream.Read(mAttachmentNode);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+        err = stream.Read(mInitialLocalTransform);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+        return size;
+    }
+    int32_t Write(Stream &stream) const
+    {
+        int32_t size = 0;
+        int32_t err;
+        err = stream.Write(mAttachmentAgent);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+        err = stream.Write(mAttachmentNode);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+        err = stream.Write(mInitialLocalTransform);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+        return size;
+    }
+    class String mAttachmentAgent;
+    class Symbol mAttachmentNode;
+    class Transform mInitialLocalTransform;
+    static constexpr bool IS_BLOCKED = true;
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("LocationInfo", crc); }
+};
 
 class CompressedSkeletonPoseKeys2 : public AnimationValueInterfaceBase
 {
@@ -27,7 +86,7 @@ class CompressedSkeletonPoseKeys2 : public AnimationValueInterfaceBase
     uint32_t mDataSize;
     uint8_t *mpData;
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("CompressedSkeletonPoseKeys2"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("CompressedSkeletonPoseKeys2", crc); }
 
     int32_t Read(Stream &stream)
     {
@@ -123,7 +182,7 @@ class Animation::Impl
         }
         if (cspk == nullptr)
         {
-            return TTH_TYPE_NOT_FOUND;
+            return -TTH_TYPE_NOT_FOUND;
         }
 
         CompressedSkeletonPoseKeys2::Header header = *(CompressedSkeletonPoseKeys2::Header *)(cspk->mpData); // TODO: undefined behaviour? Should probably fix
@@ -373,6 +432,12 @@ class Animation::Impl
                     mValues[currentInterfaceIndex++] = new KeyframedValue<bool>;
                 }
                 break;
+            case KeyframedValue<LocationInfo>::GetTypeCRC64():
+                while (animValue.valueCount--)
+                {
+                    mValues[currentInterfaceIndex++] = new KeyframedValue<LocationInfo>;
+                }
+                break;
             default:
                 assert(0);
                 break;
@@ -407,7 +472,7 @@ class Animation::Impl
 
         return size;
     }
-    int32_t Write(Stream &stream) const { return 0; }
+    int32_t Write(Stream &stream) const { return 0; } // TODO: Implement
 
     Impl() : mVersion(-1), mFlags(0), mName(Symbol(0)), mLength(0.0f), mAdditiveMask(0.0f), mToolProps(0), mInterfaceCount(0), mValues(nullptr), mInterfaceFlags(nullptr), mInterfaceSymbols(nullptr) {}
     ~Impl()

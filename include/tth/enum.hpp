@@ -11,7 +11,7 @@ struct EnumBase
     int32_t Read(Stream &stream) { return 0; }
     int32_t Write(Stream &stream) const { return 0; }
     static constexpr bool IS_BLOCKED = false;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("EnumBase"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("EnumBase", crc); }
 };
 
 struct EnumPlatformType : public EnumBase
@@ -57,7 +57,7 @@ struct EnumPlatformType : public EnumBase
     }
     int32_t mVal;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("EnumPlatformType"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("EnumPlatformType", crc); }
 };
 
 struct EnumT3MaterialLightModelType : public EnumBase
@@ -103,6 +103,6 @@ struct EnumT3MaterialLightModelType : public EnumBase
     }
     int32_t mVal;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("EnumT3MaterialLightModelType"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("EnumT3MaterialLightModelType", crc); }
 };
 }; // namespace TTH

@@ -62,7 +62,7 @@ class BoneContraints
     }
 
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("BoneContraints"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("BoneContraints", crc); }
 };
 
 class Skeleton::Impl

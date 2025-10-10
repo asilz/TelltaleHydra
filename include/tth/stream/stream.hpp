@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <tth/core/errno.hpp>
+#include <tth/crypto/blowfish.hpp>
 #include <type_traits>
 
 namespace TTH

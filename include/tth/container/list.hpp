@@ -35,6 +35,7 @@ template <class T> class DCArray : public std::list<T>
         return size;
     }
 
+    // static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive(">", T::GetTypeCRC64(CRC64_CaseInsensitive("List<"))); }
     static constexpr bool IS_BLOCKED = true;
 };
 }; // namespace TTH

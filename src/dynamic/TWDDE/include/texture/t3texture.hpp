@@ -14,7 +14,7 @@ struct RenderSwizzleParams
     int32_t Write(Stream &stream) const { return stream.Write(static_cast<const void *>(mSwizzle), sizeof(mSwizzle)); }
     uint8_t mSwizzle[4];
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("RenderSwizzleParams"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("RenderSwizzleParams", crc); }
 };
 class T3SamplerStateBlock
 {
@@ -23,7 +23,7 @@ class T3SamplerStateBlock
     int32_t Write(Stream &stream) const { return stream.Write(mData); }
     uint32_t mData;
     static constexpr bool IS_BLOCKED = true;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3SamplerStateBlock"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3SamplerStateBlock", crc); }
 };
 class T3ToonGradientRegion
 {
@@ -80,6 +80,6 @@ class T3ToonGradientRegion
     float mSize;
     float mGradientSize;
     static constexpr bool IS_BLOCKED = false;
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("T3ToonGradientRegion"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3ToonGradientRegion", crc); }
 };
 }; // namespace TTH

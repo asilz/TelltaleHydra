@@ -1,6 +1,6 @@
 #pragma once
 
-#include <inttypes.h>
+#include <cinttypes>
 #include <tth/stream/stream.hpp>
 
 namespace TTH
@@ -40,7 +40,7 @@ constexpr uint64_t CRC64(const char *buf, uint64_t crc = 0)
 {
     while (*buf)
     {
-        crc = crc64_table_[((int)(crc >> 56) ^ *(buf++)) & 0xFF] ^ (crc << 8);
+        crc = crc64_table_[(crc >> 56) ^ *(buf++)] ^ (crc << 8);
     }
     return crc;
 }
@@ -52,7 +52,7 @@ constexpr uint64_t CRC64_CaseInsensitive(const char *buf, uint64_t crc = 0)
         char ch = *(buf++);
         if (ch >= 'A' && ch <= 'Z')
             ch |= 0x20;
-        crc = crc64_table_[((int)(crc >> 56) ^ ch) & 0xFF] ^ (crc << 8);
+        crc = crc64_table_[(crc >> 56) ^ ch] ^ (crc << 8);
     }
     return crc;
 }
@@ -72,7 +72,7 @@ class Symbol
     bool operator>(const Symbol &rhs) const { return this->mCRC64 > rhs.mCRC64; }
     bool operator==(const Symbol &rhs) const { return this->mCRC64 == rhs.mCRC64; }
 
-    static constexpr uint64_t GetTypeCRC64() { return CRC64_CaseInsensitive("Symbol"); }
+    static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("Symbol", crc); }
     static constexpr bool IS_BLOCKED = false;
 };
 
