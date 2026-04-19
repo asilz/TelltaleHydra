@@ -18,7 +18,7 @@ endif()
 target_compile_definitions(hydra PRIVATE TTE_LOG_LEVEL=${LOG_LEVEL})
 target_compile_options(hydra PRIVATE -Wall)
 target_include_directories(hydra PUBLIC include)
-target_link_libraries(hydra twdde)
+target_link_libraries(hydra twdde) # Replace with "target_link_libraries(hydra mcsm2)" if you want to convert mcsm2 assets
 
 set (USE_ADDRESS_SANITIZER OFF CACHE BOOL "Should the Address Sanitizer tool be enabled?")
 if (USE_ADDRESS_SANITIZER)

@@ -1,6 +1,8 @@
 # TelltaleHydra
 
 ## Building
+### Choosing the target game
+If you wish to convert assets from MCSM2 instead of TWDDE, replace this line ` target_link_libraries(hydra twdde) ` in CMakeLists.txt in the root directory with ` target_link_libraries(hydra mcsm2) `
 ### Windows
 ```
 git clone https://github.com/asilz/TelltaleHydra.git --recurse-submodules
