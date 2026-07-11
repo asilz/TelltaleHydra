@@ -154,6 +154,49 @@ class D3DMesh::Impl
             return err;
         }
         size += err;
+
+        err = stream.Write(mAsyncResourceCount);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        for (uint32_t i = 0; i < mAsyncResourceCount; ++i)
+        {
+            size += stream.Write(mAsyncResources[i].nameHash);
+            size += stream.Write(mAsyncResources[i].typeHash);
+            size += stream.Write(mAsyncResources[i].resource);
+        }
+
+        err = stream.Write(unknown);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        if (mpOcclusionMeshData != nullptr)
+        {
+            char isOcclusionMeshData = '1';
+            size += stream.Write(isOcclusionMeshData);
+            size += stream.Write(*mpOcclusionMeshData, true);
+        }
+        else
+        {
+            char isOcclusionMeshData = '0';
+            size += stream.Write(isOcclusionMeshData);
+        }
+
+        err = stream.Write(mMeshData);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        size += stream.Write((void *)async, this->asyncSize);
+
         return size;
     }
 

@@ -2752,15 +2752,14 @@ struct T3MeshData
         }
         size += err;
 
-        uint32_t texCoordCount;
-        err = stream.Read(texCoordCount);
+        err = stream.Read(mTexCoordCount);
         if (err < 0)
         {
             return err;
         }
         size += err;
 
-        while (texCoordCount--)
+        for (uint32_t i = 0; i < mTexCoordCount; ++i)
         {
             uint32_t texCoordIndex;
             err = stream.Read(texCoordIndex);
@@ -2915,6 +2914,46 @@ struct T3MeshData
             return err;
         }
         size += err;
+
+        err = stream.Write(mTexCoordCount);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
+
+        for (uint32_t i = 0; i < mTexCoordCount; ++i)
+        {
+            err = stream.Write(i);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+            err = stream.Write(mTexCoordTransform[i]);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+        }
+
+        if (this->mFlags.mFlags & eHasCPUSkinning)
+        {
+            err = stream.Write(*mpCPUSkinningData);
+            if (err < 0)
+            {
+                return err;
+            }
+            size += err;
+        }
+
+        err = stream.Write(mVertexStates, false);
+        if (err < 0)
+        {
+            return err;
+        }
+        size += err;
         return size;
     }
     enum MeshFlags // T3MeshData
@@ -2950,6 +2989,7 @@ struct T3MeshData
     T3MeshTexCoordTransform mTexCoordTransform[4];
     T3MeshCPUSkinningData *mpCPUSkinningData;
     DCArray<T3GFXVertexState> mVertexStates;
+    uint32_t mTexCoordCount;
 
     static constexpr bool IS_BLOCKED = true;
     static constexpr uint64_t GetTypeCRC64(uint64_t crc = 0) { return CRC64_CaseInsensitive("T3MeshData", crc); }
